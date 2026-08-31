@@ -1,89 +1,99 @@
-# תוכנית עבודה מפורטת: מעבר מ-Supabase ל-Neon Serverless PostgreSQL
+# תוכנית יישום טכנית לביצוע AI: מעבר ל-Neon Serverless PostgreSQL
 
-מסמך זה מפרט תוכנית עבודה מקיפה, מסודרת ומפורטת להעברת בסיס הנתונים ותשתיות האחסון של האפליקציה מ-**Supabase** ל-**Neon Serverless PostgreSQL**.
-
----
-
-## 1. תקציר ומטרות המעבר
-
-### למה Neon?
-1. **Serverless PostgreSQL טהור:** קנה מידה אוטומטי (Auto-scaling) עם אפרוריות זיכרון (Scale to Zero) המפחיתה עלויות בזמני חוסר פעילות.
-2. **Branching (ענפי בסיס נתונים):** יכולת ליצור ענפי DB מיידיים עבור סביבות Development ו-Staging בלחיצת כפתור/API.
-3. **ביצועים וחיבור קל:** תמיכה בחיבור תהליכי Serverless דרך HTTP/WebSocket driver וחיבור PostgreSQL סטנדרטי.
+תוכנית טכנית ממוקדת, תמציתית וחד-משמעית למימוש מעבר מ-Supabase ל-Neon. מיועדת להרצה ישירה ע״י סוכן AI / מפתח.
 
 ---
 
-## 2. השוואת ארכיטקטורה: Supabase vs. Neon
+## 🚀 מערך משימות טכניות (Technical Task Execution Array)
 
-| רכיב | Supabase | Neon |
-|---|---|---|
-| **סוג בסיס הנתונים** | Managed PostgreSQL + PostgREST | Serverless PostgreSQL (Pure Postgres) |
-| **אימות משתמשים (Auth)** | Supabase Auth (מובנה בתוך ה-DB) | עצמאי (Express Auth / Auth0 / Clerk / JWT) |
-| **אבטחת מידע ברמת שורה** | Row Level Security (RLS) עם `auth.uid()` | מסנני שאילתות מבוססי `user_id` ברמת השרת/מתאם |
-| **דרייבר התחברות** | `@supabase/supabase-js` | `@neondatabase/serverless` או `pg` |
-
----
-
-## 3. שלבי תוכנית העבודה (Migration Plan Steps)
-
-### שלב 1: הקמת פרויקט ב-Neon והגדרת משתני סביבה
-1. **הרשמה ויצירת פרויקט:**
-   - היכנס ל-Dashboard ב-https://neon.tech וצור פרויקט חדש (למשל: `calorie-tracker-db`).
-2. **קבלת מחרוזת החיבור (Connection String):**
-   - העתק את ה-`Database URL` במבנה:
-     `postgresql://<user>:<password>@<ep-hostname>.neon.tech/<dbname>?sslmode=require`
-3. **הגדרת משתני הסביבה באפליקציה (`.env` / `.env.example`):**
-   ```env
-   # Neon Connection URL
-   VITE_NEON_DATABASE_URL="postgresql://user:password@ep-xyz.neon.tech/neondb?sslmode=require"
-   NEON_DATABASE_URL="postgresql://user:password@ep-xyz.neon.tech/neondb?sslmode=require"
-   ```
+### [TASK-01] התקנת תלויות ודרייבר Neon Serverless
+- **קובץ יעד:** `package.json`
+- **פעולה:** הוספת חבילת `@neondatabase/serverless` ו-`pg` עבור חיבור Serverless HTTP/WebSocket.
+- **הנחיית מימוש:**
+  ```bash
+  npm install @neondatabase/serverless pg
+  npm install --save-dev @types/pg
+  ```
 
 ---
 
-### שלב 2: פריסת הסכמה (Schema Deployment) ב-Neon
+### [TASK-02] הגדרת חיבור ולקוח Neon Client
+- **קובץ יעד:** `src/services/neon/client.ts`
+- **פעולה:** יצירת מודול חיבור ל-Neon המשתמש ב-`@neondatabase/serverless` עם Pooling מתאים עבור Serverless.
+- **הנחיית מימוש:**
+  ```typescript
+  import { Pool, neonConfig } from '@neondatabase/serverless';
 
-1. פתח את ה-**SQL Editor** ב-Neon Console.
-2. הרץ את סכמת ה-PostgreSQL המותאמת הנמצאת בקובץ `src/services/neon/schema.sql`.
+  export function getNeonPool(): Pool | null {
+    const connectionString = import.meta.env.VITE_NEON_DATABASE_URL || process.env.NEON_DATABASE_URL;
+    if (!connectionString) return null;
+    return new Pool({ connectionString });
+  }
 
-#### טבלאות עיקריות בסכמה:
-- `user_profiles` – פרופיל משתמש ויעדים תזונתיים.
-- `food_reports` – יומן דיווחי מזון (טקסט, קול, צילום).
-- `food_components` – רכיבים תזונתיים מפורטים לכל דיווח (cascade delete בקישור לדיווח).
-- `weight_entries` – מעקב שקילות משקל.
-- `user_food_memories` – זיכרונות אוכל מותאמים אישית.
-- `water_entries` – מעקב שתיית מים יומית.
-
----
-
-### שלב 3: התאמת שכבת האחסון וה-Adapter בצידי הלקוח והשרת
-
-1. **Client / Connection:**
-   - הקובץ `src/services/neon/client.ts` מנהל את בדיקת החיבור ומשתני הסביבה.
-2. **NeonAdapter (`src/services/repository/NeonAdapter.ts`):**
-   - מתאם נתונים המממש את ממשק `IDataRepository`.
-   - מאפשר עבודה שקופה מול Neon עם תמיכה במצב Offline-First (נפילה חזרה ל-LocalStorage כשאין חיבור).
-3. **Repository Factory (`src/services/repository/index.ts`):**
-   - תמיכה בטייפ `StorageProviderType = 'local' | 'supabase' | 'neon'`.
-   - בחירה אוטומטית של Neon כאשר `VITE_NEON_DATABASE_URL` מוגדר.
+  export async function queryNeon<T = any>(sql: string, params: any[] = []): Promise<T[]> {
+    const pool = getNeonPool();
+    if (!pool) throw new Error('Neon connection string not configured');
+    const { rows } = await pool.query(sql, params);
+    return rows;
+  }
+  ```
 
 ---
 
-### שלב 4: העברת נתונים קיימים (Data Migration Process)
-
-אם קיימים נתונים ב-Supabase או בזיכרון המקומי בדפדפנים:
-1. **ייצוא:** השתמש בכפתור **"ייצוא גיבוי JSON"** בהגדרות הנתונים באפליקציה לקבלת קובץ `calories-backup-YYYY-MM-DD.json`.
-2. **מעבר מנוע:** החלף את סוג האחסון ל-**Neon** בהגדרות.
-3. **ייבוא:** הטרע את הקובץ באמצעות **"ייבוא מגיבוי"** – כל הנתונים ישוחזרו ישירות לתוך ה-Neon PostgreSQL Database.
+### [TASK-03] יישום מלא של NeonAdapter (CRUD מלא)
+- **קובץ יעד:** `src/services/repository/NeonAdapter.ts`
+- **פעולה:** מימוש מלא של הממשק `IDataRepository` המבצע שאילתות SQL ישירות מול Neon דרך `queryNeon`.
+- **הנחיית מימוש:**
+  - `getProfile(userId)` -> `SELECT * FROM user_profiles WHERE user_id = $1`
+  - `saveProfile(profile)` -> `INSERT INTO user_profiles (...) VALUES (...) ON CONFLICT (user_id) DO UPDATE ...`
+  - `getReports(userId, filters)` -> `SELECT r.*, json_agg(c.*) as components FROM food_reports r LEFT JOIN food_components c ON r.id = c.report_id WHERE r.user_id = $1 GROUP BY r.id`
+  - `createReport(report)` -> Transaction / Batch query להכנסת הדיווח והרכיבים.
+  - `addWeightEntry(entry)`, `saveFoodMemory(memory)`, `setWater(date, amountMl)`.
 
 ---
 
-## 4. בדיקת תקינות ואימות (Verification)
+### [TASK-04] התאמת שרת Node/Express עבור Neon Query Endpoint
+- **קובץ יעד:** `server.ts`
+- **פעולה:** הוספת API Endpoint מאובטח בשרת למעבר שאילתות SQL מול Neon במקום גישה ישירה מהלקוח.
+- **הנחיית מימוש:**
+  ```typescript
+  app.post('/api/neon/query', async (req, res) => {
+    try {
+      const { sql, params } = req.body;
+      const results = await queryNeon(sql, params);
+      return res.json({ success: true, data: results });
+    } catch (err: any) {
+      return res.status(500).json({ success: false, error: err.message });
+    }
+  });
+  ```
 
-לאחר ביצוע המעבר:
-1. **בדיקת חיבור:** לחץ על **"בדוק חיבור לענן"** במסך ניהול הנתונים באפליקציה.
-2. **בדיקת CRUD מלאה:**
-   - הוספת דיווח מזון חדש ביומן.
-   - עדכון משקל יומיומי.
-   - הוספת זיכרון אוכל מותאם.
-   - רענון העמוד ואימות שהנתונים נשמרים בהצלחה ב-Neon.
+---
+
+### [TASK-05] פריסת סכמת בסיס הנתונים ב-Neon
+- **קובץ יעד:** `src/services/neon/schema.sql`
+- **פעולה:** הרצת סכמת ה-PostgreSQL ב-Neon SQL Console.
+- **הנחיית מימוש:**
+  1. יצירת טבלאות: `user_profiles`, `food_reports`, `food_components`, `weight_entries`, `user_food_memories`, `water_entries`.
+  2. יצירת אינדקסים על `(user_id, recorded_at)` ו-`(report_id)`.
+  3. יצירת פונקציה וטריגר `set_updated_at()`.
+
+---
+
+### [TASK-06] עדכון Repository Factory ו-AppContext
+- **קובצי יעד:** `src/services/repository/index.ts`, `src/context/AppContext.tsx`
+- **פעולה:** חיבור ה-NeonAdapter למנגנון ה-Repository Factory כברירת מחדל כאשר `VITE_NEON_DATABASE_URL` מוגדר.
+- **הנחיית מימוש:**
+  ```typescript
+  if (isNeonConfigured()) {
+    return new NeonAdapter();
+  }
+  ```
+
+---
+
+### [TASK-07] אימות ובדיקות מקצה לקצה (End-to-End Verification)
+- **פעולה:**
+  1. הרצת `npm run lint` (`tsc --noEmit`).
+  2. הרצת `npm run build` לוודא תקינות הידור.
+  3. בדיקת CRUD מלאה של דיווחים, שקילות ומים בממשק.
