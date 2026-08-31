@@ -87,6 +87,9 @@ export const AuthModal: React.FC<{ isOpen: boolean; onClose: () => void }> = ({
       const res = await loginWithGoogle();
       if (!res.success) {
         setErrorMsg(res.error || 'התחברות עם Google נכשלה');
+      } else {
+        setSuccessMsg('התחברת בהצלחה עם Google!');
+        setTimeout(() => onClose(), 1200);
       }
     } catch (err: any) {
       setErrorMsg(err.message || 'שגיאת התחברות עם Google');
@@ -130,7 +133,7 @@ export const AuthModal: React.FC<{ isOpen: boolean; onClose: () => void }> = ({
               </h3>
               <p className="text-xs text-slate-400">
                 {currentUser
-                  ? 'סנכרון ענן מאובטח פעיל'
+                  ? 'סנכרון ענן Neon מאובטח'
                   : 'שמור וסנכרן את יומן התזונה שלך בין כל המכשירים'}
               </p>
             </div>
@@ -178,7 +181,7 @@ export const AuthModal: React.FC<{ isOpen: boolean; onClose: () => void }> = ({
                 <span className="text-slate-400">סטטוס סנכרון:</span>
                 <span className="text-emerald-400 font-bold flex items-center gap-1">
                   <ShieldCheck className="w-3.5 h-3.5" />
-                  <span>ענן פעיל ומאובטח</span>
+                  <span>ענן Neon פעיל ומאובטח</span>
                 </span>
               </div>
             </div>

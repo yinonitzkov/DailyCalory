@@ -1,3 +1,7 @@
+import { Pool } from '@neondatabase/serverless';
+
+let poolInstance: Pool | null = null;
+
 function getEnvVar(name: string): string | undefined {
   try {
     const meta = import.meta as unknown as { env?: Record<string, string | undefined> };
@@ -7,16 +11,39 @@ function getEnvVar(name: string): string | undefined {
   } catch {
     // Ignore
   }
+  if (typeof process !== 'undefined' && process.env && process.env[name]) {
+    return process.env[name];
+  }
   return undefined;
 }
 
 export function isNeonConfigured(): boolean {
-  const url = getEnvVar('VITE_NEON_DATABASE_URL') || getEnvVar('NEON_DATABASE_URL');
+  const url = getNeonDatabaseUrl();
   return Boolean(url && url.trim().length > 0);
 }
 
 export function getNeonDatabaseUrl(): string | undefined {
   return getEnvVar('VITE_NEON_DATABASE_URL') || getEnvVar('NEON_DATABASE_URL');
+}
+
+export function getNeonPool(): Pool | null {
+  if (poolInstance) return poolInstance;
+
+  const dbUrl = getNeonDatabaseUrl();
+  if (!dbUrl) return null;
+
+  poolInstance = new Pool({ connectionString: dbUrl });
+  return poolInstance;
+}
+
+export async function queryNeon<T = any>(sql: string, params: any[] = []): Promise<T[]> {
+  const pool = getNeonPool();
+  if (!pool) {
+    throw new Error('מחרוזת החיבור של Neon (NEON_DATABASE_URL) אינה מוגדרת.');
+  }
+
+  const { rows } = await pool.query(sql, params);
+  return rows as T[];
 }
 
 export async function testNeonConnection(): Promise<{
@@ -28,20 +55,25 @@ export async function testNeonConnection(): Promise<{
   if (!dbUrl) {
     return {
       ok: false,
-      message: 'מחרוזת החיבור של Neon (NEON_DATABASE_URL / VITE_NEON_DATABASE_URL) אינה מוגדרת במשתני הסביבה.',
+      message: 'מחרוזת החיבור של Neon (NEON_DATABASE_URL) אינה מוגדרת במשתני הסביבה.',
     };
   }
 
   try {
-    // If running with server endpoints or serverless HTTP driver
+    const pool = getNeonPool();
+    if (!pool) {
+      return { ok: false, message: 'כישלון ביצירת חיבור ל-Neon' };
+    }
+
+    await pool.query('SELECT 1');
     return {
       ok: true,
-      message: 'מחרוזת החיבור ל-Neon מוגדרת ומוכנה לעבודה!',
+      message: 'החיבור ל-Neon Serverless PostgreSQL תקין ופעיל!',
     };
   } catch (err: any) {
     return {
       ok: false,
-      message: `שגיאת חיבור ל-Neon: ${err.message || String(err)}`,
+      message: `שגיאה בתקשורת עם Neon: ${err.message || String(err)}`,
       details: err,
     };
   }
