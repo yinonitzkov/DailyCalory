@@ -246,12 +246,21 @@ export const DataManagementSection: React.FC<DataManagementSectionProps> = ({
           {/* Current storage badge */}
           <div
             className={`px-2.5 py-1 rounded-full text-[10px] font-bold flex items-center gap-1 border ${
-              storageType === 'supabase'
+              storageType === 'neon' || storageType === 'supabase'
                 ? 'bg-sky-950/60 text-sky-300 border-sky-800'
                 : 'bg-emerald-950/60 text-emerald-300 border-emerald-800'
             }`}
           >
-            {storageType === 'supabase' ? (
+            {storageType === 'neon' ? (
+              <>
+                {isCloudLoading ? (
+                  <Loader2 className="w-3 h-3 text-sky-400 animate-spin" />
+                ) : (
+                  <Database className="w-3 h-3 text-sky-400" />
+                )}
+                <span>ענן Neon</span>
+              </>
+            ) : storageType === 'supabase' ? (
               <>
                 {isCloudLoading ? (
                   <Loader2 className="w-3 h-3 text-sky-400 animate-spin" />
@@ -346,16 +355,17 @@ export const DataManagementSection: React.FC<DataManagementSectionProps> = ({
 
           {showConfigHelp && (
             <div className="p-3 bg-slate-900/90 rounded-xl border border-sky-900/40 text-[11px] text-slate-300 space-y-2">
-              <p className="font-semibold text-sky-300">חיבור מסד נתונים Supabase:</p>
+              <p className="font-semibold text-sky-300">חיבור מסד נתונים Neon / Supabase:</p>
               <p>
-                האפליקציה תומכת בשמירת נתונים ישירה בענן PostgreSQL / Supabase עם ביצועים מהירים, אבטחת RLS ואימות משתמשים.
+                האפליקציה תומכת בשמירת נתונים ישירה בענן PostgreSQL Serverless של Neon או Supabase עם ביצועים מהירים.
               </p>
               <div className="bg-slate-950 p-2 rounded-lg font-mono text-[10px] text-emerald-400 border border-slate-800 space-y-1">
+                <div>VITE_NEON_DATABASE_URL=postgresql://user:pass@ep-xyz.neon.tech/neondb</div>
                 <div>VITE_SUPABASE_URL=https://your-project.supabase.co</div>
                 <div>VITE_SUPABASE_ANON_KEY=eyJhbGciOi...</div>
               </div>
               <p className="text-[10px] text-slate-400">
-                * קובץ הסכמה המלא נמצא ב-<code>src/services/supabase/schema.sql</code> להרצה ב-SQL Editor של Supabase.
+                * קובץ הסכמה המלא עבור Neon נמצא ב-<code>src/services/neon/schema.sql</code>.
               </p>
             </div>
           )}

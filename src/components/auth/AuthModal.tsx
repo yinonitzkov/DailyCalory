@@ -130,7 +130,7 @@ export const AuthModal: React.FC<{ isOpen: boolean; onClose: () => void }> = ({
               </h3>
               <p className="text-xs text-slate-400">
                 {currentUser
-                  ? 'סנכרון ענן מאובטח עם Supabase Auth'
+                  ? 'סנכרון ענן מאובטח פעיל'
                   : 'שמור וסנכרן את יומן התזונה שלך בין כל המכשירים'}
               </p>
             </div>
@@ -178,7 +178,7 @@ export const AuthModal: React.FC<{ isOpen: boolean; onClose: () => void }> = ({
                 <span className="text-slate-400">סטטוס סנכרון:</span>
                 <span className="text-emerald-400 font-bold flex items-center gap-1">
                   <ShieldCheck className="w-3.5 h-3.5" />
-                  <span>ענן Supabase פעיל ומאובטח</span>
+                  <span>ענן פעיל ומאובטח</span>
                 </span>
               </div>
             </div>

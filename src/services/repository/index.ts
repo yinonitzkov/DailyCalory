@@ -1,21 +1,29 @@
 import { IDataRepository } from './IDataRepository';
 import { LocalStorageAdapter } from './LocalStorageAdapter';
 import { SupabaseAdapter } from './SupabaseAdapter';
+import { NeonAdapter } from './NeonAdapter';
 import { isSupabaseConfigured, testSupabaseConnection } from '../supabase/client';
+import { isNeonConfigured } from '../neon/client';
 
 export * from './IDataRepository';
 export * from './LocalStorageAdapter';
 export * from './SupabaseAdapter';
+export * from './NeonAdapter';
 
 const STORAGE_PREF_KEY = 'calories_storage_provider_preference';
 
+export type StorageProviderType = 'local' | 'supabase' | 'neon';
+
 // Singleton instance
 let currentRepository: IDataRepository | null = null;
-let currentStorageType: 'local' | 'supabase' = 'local';
+let currentStorageType: StorageProviderType = 'local';
 
-export function getActiveStorageType(): 'local' | 'supabase' {
+export function getActiveStorageType(): StorageProviderType {
   if (typeof window !== 'undefined') {
-    const savedPref = localStorage.getItem(STORAGE_PREF_KEY);
+    const savedPref = localStorage.getItem(STORAGE_PREF_KEY) as StorageProviderType | null;
+    if (savedPref === 'neon' && isNeonConfigured()) {
+      return 'neon';
+    }
     if (savedPref === 'supabase' && isSupabaseConfigured()) {
       return 'supabase';
     }
@@ -23,21 +31,27 @@ export function getActiveStorageType(): 'local' | 'supabase' {
       return 'local';
     }
   }
+  if (isNeonConfigured()) return 'neon';
   return isSupabaseConfigured() ? 'supabase' : 'local';
 }
 
-export function getDataRepository(forceType?: 'local' | 'supabase'): IDataRepository {
+export function getDataRepository(forceType?: StorageProviderType): IDataRepository {
   if (forceType === 'local') {
     return new LocalStorageAdapter();
   }
   if (forceType === 'supabase') {
     return new SupabaseAdapter();
   }
+  if (forceType === 'neon') {
+    return new NeonAdapter();
+  }
 
   const activeType = getActiveStorageType();
   if (!currentRepository || currentStorageType !== activeType) {
     currentStorageType = activeType;
-    if (activeType === 'supabase') {
+    if (activeType === 'neon') {
+      currentRepository = new NeonAdapter();
+    } else if (activeType === 'supabase') {
       currentRepository = new SupabaseAdapter();
     } else {
       currentRepository = new LocalStorageAdapter();
@@ -46,12 +60,14 @@ export function getDataRepository(forceType?: 'local' | 'supabase'): IDataReposi
   return currentRepository;
 }
 
-export function switchStorageType(type: 'local' | 'supabase'): IDataRepository {
+export function switchStorageType(type: StorageProviderType): IDataRepository {
   if (typeof window !== 'undefined') {
     localStorage.setItem(STORAGE_PREF_KEY, type);
   }
   currentStorageType = type;
-  if (type === 'supabase') {
+  if (type === 'neon') {
+    currentRepository = new NeonAdapter();
+  } else if (type === 'supabase') {
     currentRepository = new SupabaseAdapter();
   } else {
     currentRepository = new LocalStorageAdapter();

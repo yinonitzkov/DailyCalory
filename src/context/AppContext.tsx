@@ -20,6 +20,7 @@ import {
   getActiveStorageType,
   switchStorageType,
   migrateLocalToCloud,
+  StorageProviderType,
 } from '../services/repository';
 import {
   isSupabaseConfigured,
@@ -52,11 +53,11 @@ interface AppContextType {
   weeklyHistory: { date: string; dayLabel: string; calories: number; target: number }[];
   latestWeight: { current: number; previous?: number; diff?: number; date?: string };
   // Storage & Cloud features
-  storageType: 'local' | 'supabase';
+  storageType: StorageProviderType;
   isSupabaseAvailable: boolean;
   isCloudLoading: boolean;
   cloudSyncError: string | null;
-  switchStorageProvider: (type: 'local' | 'supabase') => Promise<void>;
+  switchStorageProvider: (type: StorageProviderType) => Promise<void>;
   migrateToSupabase: (onProgress?: (step: string) => void) => Promise<{
     success: boolean;
     message: string;
@@ -98,7 +99,7 @@ interface AppContextType {
 const AppContext = createContext<AppContextType | undefined>(undefined);
 
 export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [storageType, setStorageType] = useState<'local' | 'supabase'>(() => getActiveStorageType());
+  const [storageType, setStorageType] = useState<StorageProviderType>(() => getActiveStorageType());
   const isSupabaseAvailable = useMemo(() => isSupabaseConfigured(), []);
   const [isCloudLoading, setIsCloudLoading] = useState<boolean>(false);
   const [cloudSyncError, setCloudSyncError] = useState<string | null>(null);
@@ -192,7 +193,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   }, [storageType, currentUser?.id, repository, refreshRepositoryData]);
 
   // Switch storage provider dynamically
-  const switchStorageProvider = useCallback(async (newType: 'local' | 'supabase') => {
+  const switchStorageProvider = useCallback(async (newType: StorageProviderType) => {
     const repo = switchStorageType(newType);
     setStorageType(newType);
     await refreshRepositoryData(repo, currentUser?.id);
