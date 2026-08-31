@@ -1,5 +1,6 @@
 -- ==============================================================================
--- Supabase Schema for Hebrew Calorie & Nutrition Tracker
+-- Neon PostgreSQL Schema for Hebrew Calorie & Nutrition Tracker
+-- Optimized for Serverless PostgreSQL on Neon (https://neon.tech)
 -- ==============================================================================
 
 -- 1. Create updated_at trigger function
@@ -33,6 +34,7 @@ CREATE TABLE IF NOT EXISTS user_profiles (
   updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
+DROP TRIGGER IF EXISTS trg_user_profiles_updated_at ON user_profiles;
 CREATE TRIGGER trg_user_profiles_updated_at
 BEFORE UPDATE ON user_profiles
 FOR EACH ROW
@@ -61,6 +63,7 @@ CREATE TABLE IF NOT EXISTS food_reports (
 CREATE INDEX IF NOT EXISTS idx_food_reports_user_date ON food_reports(user_id, recorded_at);
 CREATE INDEX IF NOT EXISTS idx_food_reports_status ON food_reports(status);
 
+DROP TRIGGER IF EXISTS trg_food_reports_updated_at ON food_reports;
 CREATE TRIGGER trg_food_reports_updated_at
 BEFORE UPDATE ON food_reports
 FOR EACH ROW
@@ -109,6 +112,7 @@ CREATE TABLE IF NOT EXISTS user_food_memories (
 
 CREATE INDEX IF NOT EXISTS idx_food_memories_user_trigger ON user_food_memories(user_id, trigger_name);
 
+DROP TRIGGER IF EXISTS trg_user_food_memories_updated_at ON user_food_memories;
 CREATE TRIGGER trg_user_food_memories_updated_at
 BEFORE UPDATE ON user_food_memories
 FOR EACH ROW
@@ -127,43 +131,8 @@ CREATE TABLE IF NOT EXISTS water_entries (
 
 CREATE INDEX IF NOT EXISTS idx_water_entries_user_date ON water_entries(user_id, date_key);
 
+DROP TRIGGER IF EXISTS trg_water_entries_updated_at ON water_entries;
 CREATE TRIGGER trg_water_entries_updated_at
 BEFORE UPDATE ON water_entries
 FOR EACH ROW
 EXECUTE FUNCTION set_updated_at();
-
--- 8. Row Level Security (RLS) configuration
-ALTER TABLE user_profiles ENABLE ROW LEVEL SECURITY;
-ALTER TABLE food_reports ENABLE ROW LEVEL SECURITY;
-ALTER TABLE food_components ENABLE ROW LEVEL SECURITY;
-ALTER TABLE weight_entries ENABLE ROW LEVEL SECURITY;
-ALTER TABLE user_food_memories ENABLE ROW LEVEL SECURITY;
-ALTER TABLE water_entries ENABLE ROW LEVEL SECURITY;
-
--- Anonymous/Authenticated policy templates (allow matching auth.uid() or anon with user_id header)
-CREATE POLICY "Allow individual read on user_profiles" ON user_profiles
-  FOR SELECT USING (auth.uid()::text = user_id OR user_id = 'local-user-1');
-
-CREATE POLICY "Allow individual insert/update on user_profiles" ON user_profiles
-  FOR ALL USING (auth.uid()::text = user_id OR user_id = 'local-user-1');
-
-CREATE POLICY "Allow individual access on food_reports" ON food_reports
-  FOR ALL USING (auth.uid()::text = user_id OR user_id = 'local-user-1');
-
-CREATE POLICY "Allow individual access on food_components" ON food_components
-  FOR ALL USING (
-    EXISTS (
-      SELECT 1 FROM food_reports
-      WHERE food_reports.id = food_components.report_id
-      AND (food_reports.user_id = auth.uid()::text OR food_reports.user_id = 'local-user-1')
-    )
-  );
-
-CREATE POLICY "Allow individual access on weight_entries" ON weight_entries
-  FOR ALL USING (auth.uid()::text = user_id OR user_id = 'local-user-1');
-
-CREATE POLICY "Allow individual access on user_food_memories" ON user_food_memories
-  FOR ALL USING (auth.uid()::text = user_id OR user_id = 'local-user-1');
-
-CREATE POLICY "Allow individual access on water_entries" ON water_entries
-  FOR ALL USING (auth.uid()::text = user_id OR user_id = 'local-user-1');

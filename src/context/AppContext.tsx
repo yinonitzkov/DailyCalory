@@ -6,7 +6,6 @@ import React, {
   useMemo,
   useCallback,
 } from 'react';
-import { User, Session } from '@supabase/supabase-js';
 import {
   UserProfile,
   FoodReport,
@@ -19,19 +18,20 @@ import {
   getDataRepository,
   getActiveStorageType,
   switchStorageType,
-  migrateLocalToCloud,
+  StorageProviderType,
 } from '../services/repository';
 import {
-  isSupabaseConfigured,
-  testSupabaseConnection,
-  getSupabaseClient,
-} from '../services/supabase/client';
+  isNeonConfigured,
+  testNeonConnection,
+} from '../services/neon/client';
 import {
   signInWithEmail,
   signUpWithEmail,
   signInWithOtp,
   signInWithOAuth,
   signOutUser,
+  getStoredUser,
+  SimpleUser,
   AuthResult,
 } from '../services/auth/authService';
 import { DEFAULT_PROFILE } from '../services/repository/LocalStorageAdapter';
@@ -52,20 +52,14 @@ interface AppContextType {
   weeklyHistory: { date: string; dayLabel: string; calories: number; target: number }[];
   latestWeight: { current: number; previous?: number; diff?: number; date?: string };
   // Storage & Cloud features
-  storageType: 'local' | 'supabase';
-  isSupabaseAvailable: boolean;
+  storageType: StorageProviderType;
+  isNeonAvailable: boolean;
   isCloudLoading: boolean;
   cloudSyncError: string | null;
-  switchStorageProvider: (type: 'local' | 'supabase') => Promise<void>;
-  migrateToSupabase: (onProgress?: (step: string) => void) => Promise<{
-    success: boolean;
-    message: string;
-    count?: { reports: number; weights: number; memories: number; water: number };
-  }>;
+  switchStorageProvider: (type: StorageProviderType) => Promise<void>;
   testCloudConnection: () => Promise<{ ok: boolean; message: string }>;
-  // Step 5: Auth State & Actions
-  currentUser: User | null;
-  authSession: Session | null;
+  // Auth State & Actions
+  currentUser: SimpleUser | null;
   isAuthLoading: boolean;
   loginWithEmail: (email: string, pass: string) => Promise<AuthResult>;
   registerWithEmail: (email: string, pass: string) => Promise<AuthResult>;
@@ -98,15 +92,14 @@ interface AppContextType {
 const AppContext = createContext<AppContextType | undefined>(undefined);
 
 export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [storageType, setStorageType] = useState<'local' | 'supabase'>(() => getActiveStorageType());
-  const isSupabaseAvailable = useMemo(() => isSupabaseConfigured(), []);
+  const [storageType, setStorageType] = useState<StorageProviderType>(() => getActiveStorageType());
+  const isNeonAvailable = useMemo(() => isNeonConfigured(), []);
   const [isCloudLoading, setIsCloudLoading] = useState<boolean>(false);
   const [cloudSyncError, setCloudSyncError] = useState<string | null>(null);
 
   // Auth state
-  const [currentUser, setCurrentUser] = useState<User | null>(null);
-  const [authSession, setAuthSession] = useState<Session | null>(null);
-  const [isAuthLoading, setIsAuthLoading] = useState<boolean>(true);
+  const [currentUser, setCurrentUser] = useState<SimpleUser | null>(() => getStoredUser());
+  const [isAuthLoading, setIsAuthLoading] = useState<boolean>(false);
 
   const repository = useMemo(() => getDataRepository(storageType), [storageType]);
   const [selectedDate, setSelectedDate] = useState<string>(() => getLocalDateString(new Date()));
@@ -131,34 +124,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const [foodMemories, setFoodMemories] = useState<UserFoodMemory[]>(() => initialSnapshot.foodMemories);
   const [waterEntries, setWaterEntries] = useState<Record<string, number>>(() => initialSnapshot.waterEntries);
 
-  // 1. Listen for Supabase Auth State Changes
-  useEffect(() => {
-    const supabase = getSupabaseClient();
-    if (!supabase) {
-      setIsAuthLoading(false);
-      return;
-    }
-
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setAuthSession(session);
-      setCurrentUser(session?.user ?? null);
-      setIsAuthLoading(false);
-    });
-
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
-      setAuthSession(session);
-      setCurrentUser(session?.user ?? null);
-      setIsAuthLoading(false);
-    });
-
-    return () => {
-      subscription.unsubscribe();
-    };
-  }, []);
-
-  // 2. Refresh data from active repository when storage type or active user changes
+  // Refresh data from active repository when storage type or active user changes
   const refreshRepositoryData = useCallback(async (activeRepo = repository, uid?: string) => {
     try {
       setIsCloudLoading(true);
@@ -186,45 +152,39 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   }, [repository]);
 
   useEffect(() => {
-    if (storageType === 'supabase') {
+    if (storageType === 'neon') {
       refreshRepositoryData(repository, currentUser?.id);
     }
   }, [storageType, currentUser?.id, repository, refreshRepositoryData]);
 
   // Switch storage provider dynamically
-  const switchStorageProvider = useCallback(async (newType: 'local' | 'supabase') => {
+  const switchStorageProvider = useCallback(async (newType: StorageProviderType) => {
     const repo = switchStorageType(newType);
     setStorageType(newType);
     await refreshRepositoryData(repo, currentUser?.id);
   }, [refreshRepositoryData, currentUser?.id]);
 
-  const migrateToSupabase = useCallback(async (onProgress?: (step: string) => void) => {
-    const result = await migrateLocalToCloud(currentUser?.id, onProgress);
-    if (result.success) {
-      await switchStorageProvider('supabase');
-    }
-    return result;
-  }, [switchStorageProvider, currentUser?.id]);
-
   const testCloud = useCallback(async () => {
-    return testSupabaseConnection();
+    return testNeonConnection();
   }, []);
 
   // Auth Methods
   const loginWithEmailAction = useCallback(async (email: string, pass: string) => {
     const res = await signInWithEmail(email, pass);
-    if (res.success) {
-      setStorageType('supabase');
-      switchStorageType('supabase');
+    if (res.success && res.user) {
+      setCurrentUser(res.user);
+      setStorageType('neon');
+      switchStorageType('neon');
     }
     return res;
   }, []);
 
   const registerWithEmailAction = useCallback(async (email: string, pass: string) => {
     const res = await signUpWithEmail(email, pass);
-    if (res.success) {
-      setStorageType('supabase');
-      switchStorageType('supabase');
+    if (res.success && res.user) {
+      setCurrentUser(res.user);
+      setStorageType('neon');
+      switchStorageType('neon');
     }
     return res;
   }, []);
@@ -234,14 +194,18 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   }, []);
 
   const loginWithGoogleAction = useCallback(async () => {
-    return signInWithOAuth('google');
+    const res = await signInWithOAuth('google');
+    if (res.success && res.user) {
+      setCurrentUser(res.user);
+      setStorageType('neon');
+      switchStorageType('neon');
+    }
+    return res;
   }, []);
 
   const logoutAction = useCallback(async () => {
     await signOutUser();
     setCurrentUser(null);
-    setAuthSession(null);
-    // Switch back to local data gracefully
     await switchStorageProvider('local');
   }, [switchStorageProvider]);
 
@@ -480,14 +444,12 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         weeklyHistory,
         latestWeight,
         storageType,
-        isSupabaseAvailable,
+        isNeonAvailable,
         isCloudLoading,
         cloudSyncError,
         switchStorageProvider,
-        migrateToSupabase,
         testCloudConnection: testCloud,
         currentUser,
-        authSession,
         isAuthLoading,
         loginWithEmail: loginWithEmailAction,
         registerWithEmail: registerWithEmailAction,

@@ -9,15 +9,12 @@ import {
   AlertTriangle,
   ShieldCheck,
   Check,
-  Cloud,
   HardDrive,
   RefreshCw,
-  ArrowUpRight,
   Database,
   Info,
   User,
   LogIn,
-  LogOut,
   Loader2,
 } from 'lucide-react';
 
@@ -48,11 +45,10 @@ export const DataManagementSection: React.FC<DataManagementSectionProps> = ({
 }) => {
   const {
     storageType,
-    isSupabaseAvailable,
+    isNeonAvailable,
     isCloudLoading,
     currentUser,
     switchStorageProvider,
-    migrateToSupabase,
     testCloudConnection,
   } = useApp();
 
@@ -60,8 +56,6 @@ export const DataManagementSection: React.FC<DataManagementSectionProps> = ({
   const [showResetConfirm, setShowResetConfirm] = useState(false);
   const [showConfigHelp, setShowConfigHelp] = useState(false);
   const [statusMessage, setStatusMessage] = useState<{ type: 'success' | 'error' | 'info'; text: string } | null>(null);
-  const [isMigrating, setIsMigrating] = useState(false);
-  const [migrationStep, setMigrationStep] = useState<string>('');
   const [isTestingConn, setIsTestingConn] = useState(false);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -145,7 +139,6 @@ export const DataManagementSection: React.FC<DataManagementSectionProps> = ({
     };
     reader.readAsText(file);
 
-    // Reset input
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
     }
@@ -189,39 +182,6 @@ export const DataManagementSection: React.FC<DataManagementSectionProps> = ({
     }
   };
 
-  // 5. Migrate Local Data to Cloud
-  const handleMigrateToCloud = async () => {
-    setIsMigrating(true);
-    setMigrationStep('מתחיל סנכרון...');
-    setStatusMessage(null);
-
-    try {
-      const result = await migrateToSupabase((step) => {
-        setMigrationStep(step);
-      });
-
-      if (result.success) {
-        setStatusMessage({
-          type: 'success',
-          text: result.message,
-        });
-      } else {
-        setStatusMessage({
-          type: 'error',
-          text: result.message,
-        });
-      }
-    } catch (err: any) {
-      setStatusMessage({
-        type: 'error',
-        text: `הסנכרון נכשל: ${err.message || String(err)}`,
-      });
-    } finally {
-      setIsMigrating(false);
-      setMigrationStep('');
-    }
-  };
-
   return (
     <>
       <section
@@ -238,27 +198,26 @@ export const DataManagementSection: React.FC<DataManagementSectionProps> = ({
             <div>
               <h3 className="font-extrabold text-slate-100 text-sm">אחסון, סנכרון וחשבון</h3>
               <p className="text-[11px] text-slate-400">
-                שליטה מלאה על מקור האחסון, חשבון משתמש בענן Supabase וגיבוי מלא
+                שליטה מלאה על מקור האחסון, חשבון משתמש בענן Neon PostgreSQL וגיבוי מלא
               </p>
             </div>
           </div>
 
-          {/* Current storage badge */}
           <div
             className={`px-2.5 py-1 rounded-full text-[10px] font-bold flex items-center gap-1 border ${
-              storageType === 'supabase'
+              storageType === 'neon'
                 ? 'bg-sky-950/60 text-sky-300 border-sky-800'
                 : 'bg-emerald-950/60 text-emerald-300 border-emerald-800'
             }`}
           >
-            {storageType === 'supabase' ? (
+            {storageType === 'neon' ? (
               <>
                 {isCloudLoading ? (
                   <Loader2 className="w-3 h-3 text-sky-400 animate-spin" />
                 ) : (
-                  <Cloud className="w-3 h-3 text-sky-400" />
+                  <Database className="w-3 h-3 text-sky-400" />
                 )}
-                <span>ענן Supabase</span>
+                <span>ענן Neon</span>
               </>
             ) : (
               <>
@@ -281,7 +240,7 @@ export const DataManagementSection: React.FC<DataManagementSectionProps> = ({
               </div>
               <div className="text-[10px] text-slate-400">
                 {currentUser
-                  ? 'מחובר ומסונכרן עם ענן Supabase'
+                  ? 'מחובר ומסונכרן עם ענן Neon'
                   : 'התחבר כדי לגשת לנתונים מכל מכשיר'}
               </div>
             </div>
@@ -327,12 +286,12 @@ export const DataManagementSection: React.FC<DataManagementSectionProps> = ({
           </div>
         )}
 
-        {/* Cloud & Supabase Integration Box */}
+        {/* Cloud Integration Box */}
         <div className="p-4 bg-slate-950 rounded-2xl border border-slate-800 space-y-3.5">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <Database className="w-4 h-4 text-sky-400" />
-              <h4 className="text-xs font-bold text-slate-200">סנכרון ענן (Supabase Cloud Database)</h4>
+              <h4 className="text-xs font-bold text-slate-200">סנכרון ענן (Neon Serverless PostgreSQL)</h4>
             </div>
             <button
               type="button"
@@ -346,70 +305,55 @@ export const DataManagementSection: React.FC<DataManagementSectionProps> = ({
 
           {showConfigHelp && (
             <div className="p-3 bg-slate-900/90 rounded-xl border border-sky-900/40 text-[11px] text-slate-300 space-y-2">
-              <p className="font-semibold text-sky-300">חיבור מסד נתונים Supabase:</p>
+              <p className="font-semibold text-sky-300">חיבור מסד נתונים Neon:</p>
               <p>
-                האפליקציה תומכת בשמירת נתונים ישירה בענן PostgreSQL / Supabase עם ביצועים מהירים, אבטחת RLS ואימות משתמשים.
+                האפליקציה תומכת בשמירת נתונים ישירה בענן Serverless PostgreSQL של Neon עם ביצועים מהירים.
               </p>
               <div className="bg-slate-950 p-2 rounded-lg font-mono text-[10px] text-emerald-400 border border-slate-800 space-y-1">
-                <div>VITE_SUPABASE_URL=https://your-project.supabase.co</div>
-                <div>VITE_SUPABASE_ANON_KEY=eyJhbGciOi...</div>
+                <div>VITE_NEON_DATABASE_URL=postgresql://user:pass@ep-xyz.neon.tech/neondb</div>
               </div>
               <p className="text-[10px] text-slate-400">
-                * קובץ הסכמה המלא נמצא ב-<code>src/services/supabase/schema.sql</code> להרצה ב-SQL Editor של Supabase.
+                * קובץ הסכמה המלא עבור Neon נמצא ב-<code>src/services/neon/schema.sql</code>.
               </p>
             </div>
           )}
 
           <div className="text-xs text-slate-400 leading-relaxed">
-            {isSupabaseAvailable ? (
+            {isNeonAvailable ? (
               <span>
-                פרטי החיבור ל-Supabase מוגדרים. באפשרותך לבדוק חיבור פעיל, להעלות נתונים מקומיים ישנים או להחליף מנוע אחסון.
+                פרטי החיבור ל-Neon מוגדרים. באפשרותך לבדוק חיבור פעיל או להחליף מנוע אחסון.
               </span>
             ) : (
               <span>
-                כרגע האפליקציה פועלת במצב <strong>Offline First</strong> (שמירה בזיכרון הדפדפן). כדי לסנכרן בין מספר מכשירים, הגדר מפתחות Supabase.
+                כרגע האפליקציה פועלת במצב <strong>Offline First</strong> (שמירה בזיכרון הדפדפן). כדי לסנכרן בין מספר מכשירים, הגדר מפתח Neon.
               </span>
             )}
           </div>
 
-          {/* Cloud actions */}
           <div className="flex flex-wrap items-center gap-2 pt-1">
             <button
               type="button"
               onClick={handleTestConnection}
-              disabled={isTestingConn || isMigrating}
+              disabled={isTestingConn}
               className="py-2 px-3 bg-slate-900 hover:bg-slate-850 text-slate-200 border border-slate-750 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 disabled:opacity-50"
             >
               <RefreshCw className={`w-3.5 h-3.5 text-sky-400 ${isTestingConn ? 'animate-spin' : ''}`} />
               <span>{isTestingConn ? 'בודק...' : 'בדוק חיבור לענן'}</span>
             </button>
 
-            {isSupabaseAvailable && (
-              <>
-                <button
-                  type="button"
-                  onClick={handleMigrateToCloud}
-                  disabled={isMigrating || isTestingConn}
-                  className="py-2 px-3 bg-sky-950/70 hover:bg-sky-900/80 text-sky-200 border border-sky-800 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 disabled:opacity-50"
-                >
-                  <ArrowUpRight className="w-3.5 h-3.5 text-sky-400" />
-                  <span>{isMigrating ? (migrationStep || 'מסנכרן...') : 'סנכרן נתונים מקומיים לענן'}</span>
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => switchStorageProvider(storageType === 'supabase' ? 'local' : 'supabase')}
-                  disabled={isMigrating}
-                  className="py-2 px-3 bg-slate-900 hover:bg-slate-800 text-slate-300 border border-slate-800 rounded-xl text-xs font-medium transition-all mr-auto"
-                >
-                  {storageType === 'supabase' ? 'החלף למקומי (Offline)' : 'החלף ל-Supabase'}
-                </button>
-              </>
+            {isNeonAvailable && (
+              <button
+                type="button"
+                onClick={() => switchStorageProvider(storageType === 'neon' ? 'local' : 'neon')}
+                className="py-2 px-3 bg-slate-900 hover:bg-slate-800 text-slate-300 border border-slate-800 rounded-xl text-xs font-medium transition-all mr-auto"
+              >
+                {storageType === 'neon' ? 'החלף למקומי (Offline)' : 'החלף ל-Neon'}
+              </button>
             )}
           </div>
         </div>
 
-        {/* Stats of stored items */}
+        {/* Stats */}
         <div className="grid grid-cols-4 gap-2 text-center text-xs">
           <div className="p-2.5 bg-slate-950 rounded-2xl border border-slate-800">
             <span className="text-[10px] text-slate-400 block">דיווחים ביומן</span>
@@ -425,13 +369,13 @@ export const DataManagementSection: React.FC<DataManagementSectionProps> = ({
           </div>
           <div className="p-2.5 bg-slate-950 rounded-2xl border border-slate-800">
             <span className="text-[10px] text-slate-400 block">סוג אחסון</span>
-            <span className={`font-extrabold ${storageType === 'supabase' ? 'text-sky-400' : 'text-emerald-400'}`}>
-              {storageType === 'supabase' ? 'Supabase' : 'Local'}
+            <span className={`font-extrabold ${storageType === 'neon' ? 'text-sky-400' : 'text-emerald-400'}`}>
+              {storageType === 'neon' ? 'Neon' : 'Local'}
             </span>
           </div>
         </div>
 
-        {/* Action Buttons: Export & Import */}
+        {/* Action Buttons */}
         <div className="grid grid-cols-2 gap-2.5">
           <button
             type="button"
@@ -513,7 +457,6 @@ export const DataManagementSection: React.FC<DataManagementSectionProps> = ({
         )}
       </section>
 
-      {/* Authentication Modal */}
       <AuthModal isOpen={showAuthModal} onClose={() => setShowAuthModal(false)} />
     </>
   );

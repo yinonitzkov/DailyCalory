@@ -26,6 +26,7 @@ app.get('/api/health', (req, res) => {
   });
 });
 
+
 // Analyze Text endpoint (PR-04)
 app.post('/api/reports/analyze-text', async (req, res) => {
   try {
