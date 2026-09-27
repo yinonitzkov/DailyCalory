@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import { UserProfile, FoodReport, WeightEntry, UserFoodMemory } from '../../types';
+import { UserProfile, FoodReport, WeightEntry, UserFoodMemory, WorkoutPlan } from '../../types';
 import { useApp } from '../../context/AppContext';
 import { AuthModal } from '../auth/AuthModal';
 import {
@@ -27,6 +27,7 @@ interface DataManagementSectionProps {
   weightEntries: WeightEntry[];
   foodMemories?: UserFoodMemory[];
   waterEntries?: Record<string, number>;
+  workoutPlans?: WorkoutPlan[];
   onResetData: () => void;
   onImportData: (data: {
     userProfile?: UserProfile;
@@ -34,6 +35,7 @@ interface DataManagementSectionProps {
     weightEntries?: WeightEntry[];
     foodMemories?: UserFoodMemory[];
     waterEntries?: Record<string, number>;
+    workoutPlans?: WorkoutPlan[];
   }) => boolean;
 }
 
@@ -43,6 +45,7 @@ export const DataManagementSection: React.FC<DataManagementSectionProps> = ({
   weightEntries,
   foodMemories = [],
   waterEntries = {},
+  workoutPlans = [],
   onResetData,
   onImportData,
 }) => {
@@ -71,12 +74,13 @@ export const DataManagementSection: React.FC<DataManagementSectionProps> = ({
     try {
       const backupData = {
         exportedAt: new Date().toISOString(),
-        version: '1.2',
+        version: '1.3',
         userProfile,
         foodReports,
         weightEntries,
         foodMemories,
         waterEntries,
+        workoutPlans,
       };
 
       const blob = new Blob([JSON.stringify(backupData, null, 2)], {
@@ -122,6 +126,7 @@ export const DataManagementSection: React.FC<DataManagementSectionProps> = ({
           weightEntries: parsed.weightEntries,
           foodMemories: parsed.foodMemories,
           waterEntries: parsed.waterEntries,
+          workoutPlans: parsed.workoutPlans,
         });
 
         if (success) {

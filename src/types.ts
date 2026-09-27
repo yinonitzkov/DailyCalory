@@ -2,7 +2,61 @@
  * Core Types for Calories App (קלוריות)
  */
 
-export type NavTab = 'report' | 'today' | 'weight' | 'settings';
+export type NavTab = 'report' | 'today' | 'weight' | 'workouts' | 'settings';
+
+export type WorkoutFocus = 'core' | 'legs' | 'cardio' | 'full_body';
+export type ExerciseTargetType = 'reps' | 'time';
+
+export interface ExerciseVideo {
+  provider: 'youtube';
+  youtubeVideoId: string;
+  startSeconds: number;
+  endSeconds: number | null;
+  source?: string;
+}
+
+export interface Exercise {
+  id: string;
+  nameHe: string;
+  nameEn: string;
+  category: string;
+  primaryMuscles: string[];
+  equipment: string[];
+  difficulty: string;
+  movementPattern: string;
+  videos: ExerciseVideo[];
+}
+
+export interface WorkoutPlanItem {
+  id: string;
+  exerciseId: string;
+  sets: number;
+  targetType: ExerciseTargetType;
+  targetValue: string;
+  restSeconds: number;
+  sortOrder: number;
+}
+
+export interface WorkoutPlanDay {
+  id: string;
+  dayNumber: number;
+  focus: WorkoutFocus;
+  items: WorkoutPlanItem[];
+}
+
+export interface WorkoutPlan {
+  id: string;
+  userId: string;
+  name: string;
+  durationWeeks: number;
+  daysPerWeek: number;
+  focuses: WorkoutFocus[];
+  durationMinMinutes: number;
+  durationMaxMinutes: number;
+  createdAt: string;
+  updatedAt: string;
+  days: WorkoutPlanDay[];
+}
 
 export type BiologicalSex = 'male' | 'female';
 

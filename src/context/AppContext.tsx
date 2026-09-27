@@ -13,6 +13,7 @@ import {
   WeightEntry,
   DailySummary,
   UserFoodMemory,
+  WorkoutPlan,
 } from '../types';
 import { getLocalDateString, isSameDay } from '../utils/dateUtils';
 import {
@@ -92,6 +93,7 @@ interface AppContextType {
     weightEntries?: WeightEntry[];
     foodMemories?: UserFoodMemory[];
     waterEntries?: Record<string, number>;
+    workoutPlans?: WorkoutPlan[];
   }) => boolean;
 }
 
@@ -362,6 +364,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     weightEntries?: WeightEntry[];
     foodMemories?: UserFoodMemory[];
     waterEntries?: Record<string, number>;
+    workoutPlans?: WorkoutPlan[];
   }): boolean => {
     if (!data || typeof data !== 'object') return false;
     try {

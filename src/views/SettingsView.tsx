@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useApp } from '../context/AppContext';
 import { ProfileSettingsSection } from '../components/settings/ProfileSettingsSection';
 import { TargetSettingsSection } from '../components/settings/TargetSettingsSection';
@@ -6,8 +6,9 @@ import { FoodMemorySection } from '../components/settings/FoodMemorySection';
 import { NotificationsSettingsSection } from '../components/settings/NotificationsSettingsSection';
 import { DataManagementSection } from '../components/settings/DataManagementSection';
 import { AboutAppSection } from '../components/settings/AboutAppSection';
-import { UserProfile } from '../types';
+import { UserProfile, WorkoutPlan } from '../types';
 import { CheckCircle2, AlertCircle } from 'lucide-react';
+import { getDataRepository } from '../services/repository';
 
 export const SettingsView: React.FC = () => {
   const {
@@ -19,7 +20,15 @@ export const SettingsView: React.FC = () => {
     waterEntries,
     resetUserData,
     importUserData,
+    storageType,
+    currentUser,
   } = useApp();
+
+  const [workoutPlans, setWorkoutPlans] = useState<WorkoutPlan[]>([]);
+  const workoutRepository = useMemo(() => getDataRepository(storageType), [storageType]);
+  useEffect(() => {
+    workoutRepository.getWorkoutPlans(currentUser?.id || userProfile?.userId).then(setWorkoutPlans).catch(() => setWorkoutPlans([]));
+  }, [workoutRepository, currentUser?.id, userProfile?.userId]);
 
   const [feedback, setFeedback] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
 
@@ -122,6 +131,7 @@ export const SettingsView: React.FC = () => {
         weightEntries={weightEntries}
         foodMemories={foodMemories}
         waterEntries={waterEntries}
+        workoutPlans={workoutPlans}
         onResetData={resetUserData}
         onImportData={importUserData}
       />
@@ -131,4 +141,3 @@ export const SettingsView: React.FC = () => {
     </div>
   );
 };
-

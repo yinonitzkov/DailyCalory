@@ -4,6 +4,7 @@ import {
   FoodComponent,
   WeightEntry,
   UserFoodMemory,
+  WorkoutPlan,
 } from '../../types';
 import {
   IDataRepository,
@@ -462,25 +463,132 @@ export class SupabaseAdapter implements IDataRepository {
     return this.setWater(date, next, resolvedId);
   }
 
+  // --- Workout Plans ---
+  async getWorkoutPlans(userId?: string): Promise<WorkoutPlan[]> {
+    const resolvedId = await this.resolveUserId(userId);
+    const supabase = this.getClient();
+    const { data, error } = await supabase
+      .from('workout_plans')
+      .select('*, workout_plan_days(*, workout_plan_items(*))')
+      .eq('user_id', resolvedId)
+      .order('created_at', { ascending: false });
+    if (error) throw error;
+
+    return (data || []).map((row: any) => ({
+      id: row.id,
+      userId: row.user_id,
+      name: row.name,
+      durationWeeks: row.duration_weeks,
+      daysPerWeek: row.days_per_week,
+      focuses: row.focuses || [],
+      durationMinMinutes: row.duration_min_minutes,
+      durationMaxMinutes: row.duration_max_minutes,
+      createdAt: row.created_at,
+      updatedAt: row.updated_at,
+      days: (row.workout_plan_days || []).sort((a: any, b: any) => a.day_number - b.day_number).map((day: any) => ({
+        id: day.id,
+        dayNumber: day.day_number,
+        focus: day.focus,
+        items: (day.workout_plan_items || []).sort((a: any, b: any) => a.sort_order - b.sort_order).map((item: any) => ({
+          id: item.id,
+          exerciseId: item.exercise_id,
+          sets: item.sets,
+          targetType: item.target_type,
+          targetValue: item.target_value,
+          restSeconds: item.rest_seconds,
+          sortOrder: item.sort_order,
+        })),
+      })),
+    }));
+  }
+
+  async saveWorkoutPlan(plan: WorkoutPlan): Promise<WorkoutPlan> {
+    const resolvedId = await this.resolveUserId(plan.userId);
+    const supabase = this.getClient();
+    const { error: planError } = await supabase.from('workout_plans').upsert({
+      id: plan.id,
+      user_id: resolvedId,
+      name: plan.name,
+      duration_weeks: plan.durationWeeks,
+      days_per_week: plan.daysPerWeek,
+      focuses: plan.focuses,
+      duration_min_minutes: plan.durationMinMinutes,
+      duration_max_minutes: plan.durationMaxMinutes,
+      updated_at: plan.updatedAt,
+    });
+    if (planError) throw planError;
+
+    const { data: previousDays, error: daysReadError } = await supabase.from('workout_plan_days').select('id').eq('plan_id', plan.id);
+    if (daysReadError) throw daysReadError;
+    const nextDayIds = new Set(plan.days.map((day) => day.id));
+    for (const day of plan.days) {
+      const { error: dayError } = await supabase.from('workout_plan_days').upsert({
+        id: day.id,
+        plan_id: plan.id,
+        day_number: day.dayNumber,
+        focus: day.focus,
+      });
+      if (dayError) throw dayError;
+      const { data: previousItems, error: itemsReadError } = await supabase.from('workout_plan_items').select('id').eq('day_id', day.id);
+      if (itemsReadError) throw itemsReadError;
+      if (day.items.length) {
+        const { error: itemsError } = await supabase.from('workout_plan_items').upsert(day.items.map((item) => ({
+          id: item.id,
+          day_id: day.id,
+          exercise_id: item.exerciseId,
+          sets: item.sets,
+          target_type: item.targetType,
+          target_value: item.targetValue,
+          rest_seconds: item.restSeconds,
+          sort_order: item.sortOrder,
+        })));
+        if (itemsError) throw itemsError;
+      }
+      const nextItemIds = new Set(day.items.map((item) => item.id));
+      for (const oldItem of previousItems || []) {
+        if (!nextItemIds.has(oldItem.id)) {
+          const { error } = await supabase.from('workout_plan_items').delete().eq('id', oldItem.id);
+          if (error) throw error;
+        }
+      }
+    }
+    for (const oldDay of previousDays || []) {
+      if (!nextDayIds.has(oldDay.id)) {
+        const { error } = await supabase.from('workout_plan_days').delete().eq('id', oldDay.id);
+        if (error) throw error;
+      }
+    }
+    return { ...plan, userId: resolvedId };
+  }
+
+  async deleteWorkoutPlan(planId: string): Promise<boolean> {
+    const supabase = this.getClient();
+    const resolvedId = await this.resolveUserId();
+    const { error } = await supabase.from('workout_plans').delete().eq('id', planId).eq('user_id', resolvedId);
+    return !error;
+  }
+
   // --- Backup, Export, Import & Reset ---
   async exportAllData(userId?: string): Promise<AppBackupData> {
     const resolvedId = await this.resolveUserId(userId);
-    const [userProfile, foodReports, weightEntries, foodMemories, waterEntries] = await Promise.all([
+    const [userProfile, foodReports, weightEntries, foodMemories, waterEntries, workoutPlans] = await Promise.all([
       this.getProfile(resolvedId),
       this.getReports(resolvedId),
       this.getWeightEntries(resolvedId),
       this.getFoodMemories(resolvedId),
       this.getWaterEntries(resolvedId),
+      this.getWorkoutPlans(resolvedId),
     ]);
 
     return {
       exportedAt: new Date().toISOString(),
-      version: '1.2',
+      version: '1.3',
       userProfile,
       foodReports,
       weightEntries,
       foodMemories,
       waterEntries,
+      workoutPlans,
     };
   }
 
@@ -509,6 +617,9 @@ export class SupabaseAdapter implements IDataRepository {
           await this.setWater(date, ml);
         }
       }
+      if (Array.isArray(data.workoutPlans)) {
+        for (const plan of data.workoutPlans) await this.saveWorkoutPlan(plan);
+      }
       return true;
     } catch (err) {
       console.error('[SupabaseAdapter] importAllData failed:', err);
@@ -526,6 +637,7 @@ export class SupabaseAdapter implements IDataRepository {
         supabase.from('weight_entries').delete().eq('user_id', resolvedId),
         supabase.from('user_food_memories').delete().eq('user_id', resolvedId),
         supabase.from('water_entries').delete().eq('user_id', resolvedId),
+        supabase.from('workout_plans').delete().eq('user_id', resolvedId),
       ]);
       return true;
     } catch (err) {

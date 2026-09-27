@@ -3,6 +3,7 @@ import {
   FoodReport,
   WeightEntry,
   UserFoodMemory,
+  WorkoutPlan,
 } from '../../types';
 
 export interface AppBackupData {
@@ -13,6 +14,7 @@ export interface AppBackupData {
   weightEntries: WeightEntry[];
   foodMemories: UserFoodMemory[];
   waterEntries: Record<string, number>;
+  workoutPlans?: WorkoutPlan[];
 }
 
 export interface ReportFilterOptions {
@@ -55,6 +57,11 @@ export interface IDataRepository {
   getWaterByDate(date: string, userId?: string): Promise<number>;
   setWater(date: string, amountMl: number, userId?: string): Promise<number>;
   addWater(date: string, amountMl: number, userId?: string): Promise<number>;
+
+  // --- Workout Plans ---
+  getWorkoutPlans(userId?: string): Promise<WorkoutPlan[]>;
+  saveWorkoutPlan(plan: WorkoutPlan): Promise<WorkoutPlan>;
+  deleteWorkoutPlan(planId: string): Promise<boolean>;
 
   // --- Backup, Import & Reset Operations ---
   exportAllData(userId?: string): Promise<AppBackupData>;
