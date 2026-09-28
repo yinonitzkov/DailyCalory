@@ -176,7 +176,11 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         activeRepo.getWaterEntries(uid),
       ]);
 
-      if (profile) setUserProfile(profile);
+      setUserProfile(profile || {
+        ...DEFAULT_PROFILE,
+        userId: uid || DEFAULT_PROFILE.userId,
+        onboardingCompleted: false,
+      });
       setFoodReports(reports || []);
       setWeightEntries(weights || []);
       setFoodMemories(memories || []);
