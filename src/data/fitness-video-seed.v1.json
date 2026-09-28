@@ -1,0 +1,1499 @@
+{
+  "library": {
+    "version": "1.0",
+    "generated_at": "2026-09-27",
+    "purpose": "Seed library for a workout web app using embedded YouTube exercise demonstrations.",
+    "video_policy": {
+      "store_video_files": false,
+      "embed_provider": "youtube",
+      "default_play_mode": "full_video",
+      "note": "All v1 entries use a dedicated exercise-demo video. start_seconds/end_seconds remain available for future long-form videos."
+    },
+    "source_strategy": {
+      "primary_source": "PureGym exercise guides",
+      "verification": "youtube_video_id was extracted from a matching embedded/direct exercise demonstration during curation",
+      "important": "Availability and embeddability can change later; production should periodically revalidate videos."
+    },
+    "exercise_count": 51,
+    "exercises": [
+      {
+        "id": "barbell-back-squat",
+        "name_en": "Barbell Back Squat",
+        "name_he": "סקוואט עם מוט",
+        "category": "legs",
+        "primary_muscles": [
+          "quadriceps",
+          "glutes"
+        ],
+        "equipment": [
+          "barbell",
+          "rack"
+        ],
+        "difficulty": "intermediate",
+        "movement_pattern": "squat",
+        "video": {
+          "provider": "youtube",
+          "youtube_video_id": "rrJIyZGlK8c",
+          "url": "https://www.youtube.com/watch?v=rrJIyZGlK8c",
+          "start_seconds": 0,
+          "end_seconds": null,
+          "play_mode": "full_video",
+          "source": "PureGym",
+          "verification": "embed_verified_2026-09-27"
+        }
+      },
+      {
+        "id": "front-squat",
+        "name_en": "Front Squat",
+        "name_he": "פרונט סקוואט",
+        "category": "legs",
+        "primary_muscles": [
+          "quadriceps",
+          "glutes",
+          "core"
+        ],
+        "equipment": [
+          "barbell",
+          "rack"
+        ],
+        "difficulty": "intermediate",
+        "movement_pattern": "squat",
+        "video": {
+          "provider": "youtube",
+          "youtube_video_id": "Q1Ypb8ZNzI4",
+          "url": "https://www.youtube.com/watch?v=Q1Ypb8ZNzI4",
+          "start_seconds": 0,
+          "end_seconds": null,
+          "play_mode": "full_video",
+          "source": "PureGym",
+          "verification": "embed_verified_2026-09-27"
+        }
+      },
+      {
+        "id": "goblet-squat",
+        "name_en": "Goblet Squat",
+        "name_he": "גובלט סקוואט",
+        "category": "legs",
+        "primary_muscles": [
+          "quadriceps",
+          "glutes"
+        ],
+        "equipment": [
+          "dumbbell"
+        ],
+        "difficulty": "beginner",
+        "movement_pattern": "squat",
+        "video": {
+          "provider": "youtube",
+          "youtube_video_id": "zBV3ceGyAxw",
+          "url": "https://www.youtube.com/watch?v=zBV3ceGyAxw",
+          "start_seconds": 0,
+          "end_seconds": null,
+          "play_mode": "full_video",
+          "source": "PureGym",
+          "verification": "embed_verified_2026-09-27"
+        }
+      },
+      {
+        "id": "bulgarian-split-squat",
+        "name_en": "Bulgarian Split Squat",
+        "name_he": "בולגריאן ספליט סקוואט",
+        "category": "legs",
+        "primary_muscles": [
+          "quadriceps",
+          "glutes"
+        ],
+        "equipment": [
+          "dumbbells",
+          "bench"
+        ],
+        "difficulty": "intermediate",
+        "movement_pattern": "single-leg-squat",
+        "video": {
+          "provider": "youtube",
+          "youtube_video_id": "TEXl2b3__S4",
+          "url": "https://www.youtube.com/watch?v=TEXl2b3__S4",
+          "start_seconds": 0,
+          "end_seconds": null,
+          "play_mode": "full_video",
+          "source": "PureGym",
+          "verification": "embed_verified_2026-09-27"
+        }
+      },
+      {
+        "id": "reverse-lunge",
+        "name_en": "Reverse Lunge",
+        "name_he": "מכרע לאחור",
+        "category": "legs",
+        "primary_muscles": [
+          "quadriceps",
+          "glutes"
+        ],
+        "equipment": [
+          "bodyweight_or_dumbbells"
+        ],
+        "difficulty": "beginner",
+        "movement_pattern": "lunge",
+        "video": {
+          "provider": "youtube",
+          "youtube_video_id": "xrPteyQLGAo",
+          "url": "https://www.youtube.com/watch?v=xrPteyQLGAo",
+          "start_seconds": 0,
+          "end_seconds": null,
+          "play_mode": "full_video",
+          "source": "PureGym",
+          "verification": "embed_verified_2026-09-27"
+        }
+      },
+      {
+        "id": "dumbbell-step-up",
+        "name_en": "Dumbbell Step Up",
+        "name_he": "עליית מדרגה עם משקולות",
+        "category": "legs",
+        "primary_muscles": [
+          "quadriceps",
+          "glutes"
+        ],
+        "equipment": [
+          "dumbbells",
+          "box_or_bench"
+        ],
+        "difficulty": "beginner",
+        "movement_pattern": "step",
+        "video": {
+          "provider": "youtube",
+          "youtube_video_id": "DxUNi119Qzs",
+          "url": "https://www.youtube.com/watch?v=DxUNi119Qzs",
+          "start_seconds": 0,
+          "end_seconds": null,
+          "play_mode": "full_video",
+          "source": "PureGym",
+          "verification": "embed_verified_2026-09-27"
+        }
+      },
+      {
+        "id": "leg-extension",
+        "name_en": "Leg Extension",
+        "name_he": "פשיטת ברכיים במכונה",
+        "category": "legs",
+        "primary_muscles": [
+          "quadriceps"
+        ],
+        "equipment": [
+          "leg_extension_machine"
+        ],
+        "difficulty": "beginner",
+        "movement_pattern": "knee-extension",
+        "video": {
+          "provider": "youtube",
+          "youtube_video_id": "4ZDm5EbiFI8",
+          "url": "https://www.youtube.com/watch?v=4ZDm5EbiFI8",
+          "start_seconds": 0,
+          "end_seconds": null,
+          "play_mode": "full_video",
+          "source": "PureGym",
+          "verification": "embed_verified_2026-09-27"
+        }
+      },
+      {
+        "id": "lying-leg-curl",
+        "name_en": "Lying Leg Curl",
+        "name_he": "כפיפת ברכיים בשכיבה",
+        "category": "legs",
+        "primary_muscles": [
+          "hamstrings"
+        ],
+        "equipment": [
+          "leg_curl_machine"
+        ],
+        "difficulty": "beginner",
+        "movement_pattern": "knee-flexion",
+        "video": {
+          "provider": "youtube",
+          "youtube_video_id": "SbSNUXPRkc8",
+          "url": "https://www.youtube.com/watch?v=SbSNUXPRkc8",
+          "start_seconds": 0,
+          "end_seconds": null,
+          "play_mode": "full_video",
+          "source": "PureGym",
+          "verification": "embed_verified_2026-09-27"
+        }
+      },
+      {
+        "id": "seated-leg-press",
+        "name_en": "Seated Leg Press",
+        "name_he": "לחיצת רגליים בישיבה",
+        "category": "legs",
+        "primary_muscles": [
+          "quadriceps",
+          "glutes"
+        ],
+        "equipment": [
+          "leg_press_machine"
+        ],
+        "difficulty": "beginner",
+        "movement_pattern": "squat",
+        "video": {
+          "provider": "youtube",
+          "youtube_video_id": "qCR9bN3G1t4",
+          "url": "https://www.youtube.com/watch?v=qCR9bN3G1t4",
+          "start_seconds": 0,
+          "end_seconds": null,
+          "play_mode": "full_video",
+          "source": "PureGym",
+          "verification": "embed_verified_2026-09-27"
+        }
+      },
+      {
+        "id": "romanian-deadlift",
+        "name_en": "Romanian Deadlift",
+        "name_he": "דדליפט רומני",
+        "category": "legs",
+        "primary_muscles": [
+          "hamstrings",
+          "glutes"
+        ],
+        "equipment": [
+          "barbell"
+        ],
+        "difficulty": "intermediate",
+        "movement_pattern": "hinge",
+        "video": {
+          "provider": "youtube",
+          "youtube_video_id": "zU-f6DMCdAI",
+          "url": "https://www.youtube.com/watch?v=zU-f6DMCdAI",
+          "start_seconds": 0,
+          "end_seconds": null,
+          "play_mode": "full_video",
+          "source": "PureGym",
+          "verification": "embed_verified_2026-09-27"
+        }
+      },
+      {
+        "id": "conventional-deadlift",
+        "name_en": "Conventional Deadlift",
+        "name_he": "דדליפט קלאסי",
+        "category": "legs",
+        "primary_muscles": [
+          "glutes",
+          "hamstrings",
+          "back"
+        ],
+        "equipment": [
+          "barbell"
+        ],
+        "difficulty": "intermediate",
+        "movement_pattern": "hinge",
+        "video": {
+          "provider": "youtube",
+          "youtube_video_id": "GxsLrTzyGUU",
+          "url": "https://www.youtube.com/watch?v=GxsLrTzyGUU",
+          "start_seconds": 0,
+          "end_seconds": null,
+          "play_mode": "full_video",
+          "source": "PureGym",
+          "verification": "embed_verified_2026-09-27"
+        }
+      },
+      {
+        "id": "sumo-deadlift",
+        "name_en": "Sumo Deadlift",
+        "name_he": "סומו דדליפט",
+        "category": "legs",
+        "primary_muscles": [
+          "glutes",
+          "quadriceps",
+          "hamstrings"
+        ],
+        "equipment": [
+          "barbell"
+        ],
+        "difficulty": "intermediate",
+        "movement_pattern": "hinge",
+        "video": {
+          "provider": "youtube",
+          "youtube_video_id": "JbY72Him34Q",
+          "url": "https://www.youtube.com/watch?v=JbY72Him34Q",
+          "start_seconds": 0,
+          "end_seconds": null,
+          "play_mode": "full_video",
+          "source": "PureGym",
+          "verification": "embed_verified_2026-09-27"
+        }
+      },
+      {
+        "id": "barbell-hip-thrust",
+        "name_en": "Barbell Hip Thrust",
+        "name_he": "היפ תראסט עם מוט",
+        "category": "glutes",
+        "primary_muscles": [
+          "glutes"
+        ],
+        "equipment": [
+          "barbell",
+          "bench"
+        ],
+        "difficulty": "intermediate",
+        "movement_pattern": "hip-extension",
+        "video": {
+          "provider": "youtube",
+          "youtube_video_id": "aweBS7K71l8",
+          "url": "https://www.youtube.com/watch?v=aweBS7K71l8",
+          "start_seconds": 0,
+          "end_seconds": null,
+          "play_mode": "full_video",
+          "source": "PureGym",
+          "verification": "embed_verified_2026-09-27"
+        }
+      },
+      {
+        "id": "glute-bridge",
+        "name_en": "Glute Bridge",
+        "name_he": "גשר ישבן",
+        "category": "glutes",
+        "primary_muscles": [
+          "glutes",
+          "hamstrings"
+        ],
+        "equipment": [
+          "bodyweight"
+        ],
+        "difficulty": "beginner",
+        "movement_pattern": "hip-extension",
+        "video": {
+          "provider": "youtube",
+          "youtube_video_id": "tqp5XQPpTxY",
+          "url": "https://www.youtube.com/watch?v=tqp5XQPpTxY",
+          "start_seconds": 0,
+          "end_seconds": null,
+          "play_mode": "full_video",
+          "source": "PureGym",
+          "verification": "embed_verified_2026-09-27"
+        }
+      },
+      {
+        "id": "barbell-bench-press",
+        "name_en": "Barbell Bench Press",
+        "name_he": "לחיצת חזה עם מוט",
+        "category": "chest",
+        "primary_muscles": [
+          "chest",
+          "triceps",
+          "front_delts"
+        ],
+        "equipment": [
+          "barbell",
+          "bench"
+        ],
+        "difficulty": "intermediate",
+        "movement_pattern": "horizontal-push",
+        "video": {
+          "provider": "youtube",
+          "youtube_video_id": "CjHIKDQ4RQo",
+          "url": "https://www.youtube.com/watch?v=CjHIKDQ4RQo",
+          "start_seconds": 0,
+          "end_seconds": null,
+          "play_mode": "full_video",
+          "source": "PureGym",
+          "verification": "embed_verified_2026-09-27"
+        }
+      },
+      {
+        "id": "incline-dumbbell-press",
+        "name_en": "Incline Dumbbell Press",
+        "name_he": "לחיצת חזה בשיפוע עם משקולות",
+        "category": "chest",
+        "primary_muscles": [
+          "upper_chest",
+          "triceps",
+          "front_delts"
+        ],
+        "equipment": [
+          "dumbbells",
+          "incline_bench"
+        ],
+        "difficulty": "intermediate",
+        "movement_pattern": "horizontal-push",
+        "video": {
+          "provider": "youtube",
+          "youtube_video_id": "oZVCBM9f8Eo",
+          "url": "https://www.youtube.com/watch?v=oZVCBM9f8Eo",
+          "start_seconds": 0,
+          "end_seconds": null,
+          "play_mode": "full_video",
+          "source": "PureGym",
+          "verification": "embed_verified_2026-09-27"
+        }
+      },
+      {
+        "id": "dumbbell-bench-press",
+        "name_en": "Dumbbell Bench Press",
+        "name_he": "לחיצת חזה עם משקולות",
+        "category": "chest",
+        "primary_muscles": [
+          "chest",
+          "triceps",
+          "front_delts"
+        ],
+        "equipment": [
+          "dumbbells",
+          "bench"
+        ],
+        "difficulty": "beginner",
+        "movement_pattern": "horizontal-push",
+        "video": {
+          "provider": "youtube",
+          "youtube_video_id": "AduT4Eq-iP0",
+          "url": "https://www.youtube.com/watch?v=AduT4Eq-iP0",
+          "start_seconds": 0,
+          "end_seconds": null,
+          "play_mode": "full_video",
+          "source": "PureGym",
+          "verification": "embed_verified_2026-09-27"
+        }
+      },
+      {
+        "id": "seated-chest-press",
+        "name_en": "Seated Chest Press",
+        "name_he": "לחיצת חזה במכונה",
+        "category": "chest",
+        "primary_muscles": [
+          "chest",
+          "triceps",
+          "front_delts"
+        ],
+        "equipment": [
+          "chest_press_machine"
+        ],
+        "difficulty": "beginner",
+        "movement_pattern": "horizontal-push",
+        "video": {
+          "provider": "youtube",
+          "youtube_video_id": "CIykDiF4sfg",
+          "url": "https://www.youtube.com/watch?v=CIykDiF4sfg",
+          "start_seconds": 0,
+          "end_seconds": null,
+          "play_mode": "full_video",
+          "source": "PureGym",
+          "verification": "embed_verified_2026-09-27"
+        }
+      },
+      {
+        "id": "dumbbell-chest-fly",
+        "name_en": "Dumbbell Chest Fly",
+        "name_he": "פרפר חזה עם משקולות",
+        "category": "chest",
+        "primary_muscles": [
+          "chest"
+        ],
+        "equipment": [
+          "dumbbells",
+          "bench"
+        ],
+        "difficulty": "beginner",
+        "movement_pattern": "chest-adduction",
+        "video": {
+          "provider": "youtube",
+          "youtube_video_id": "Nhvz9EzdJ4U",
+          "url": "https://www.youtube.com/watch?v=Nhvz9EzdJ4U",
+          "start_seconds": 0,
+          "end_seconds": null,
+          "play_mode": "full_video",
+          "source": "PureGym",
+          "verification": "embed_verified_2026-09-27"
+        }
+      },
+      {
+        "id": "cable-fly",
+        "name_en": "Cable Fly",
+        "name_he": "פרפר בכבלים",
+        "category": "chest",
+        "primary_muscles": [
+          "chest"
+        ],
+        "equipment": [
+          "cable_machine"
+        ],
+        "difficulty": "beginner",
+        "movement_pattern": "chest-adduction",
+        "video": {
+          "provider": "youtube",
+          "youtube_video_id": "QcTcWpkn_bw",
+          "url": "https://www.youtube.com/watch?v=QcTcWpkn_bw",
+          "start_seconds": 0,
+          "end_seconds": null,
+          "play_mode": "full_video",
+          "source": "PureGym",
+          "verification": "embed_verified_2026-09-27"
+        }
+      },
+      {
+        "id": "push-up",
+        "name_en": "Push Up",
+        "name_he": "שכיבות סמיכה",
+        "category": "chest",
+        "primary_muscles": [
+          "chest",
+          "triceps",
+          "front_delts"
+        ],
+        "equipment": [
+          "bodyweight"
+        ],
+        "difficulty": "beginner",
+        "movement_pattern": "horizontal-push",
+        "video": {
+          "provider": "youtube",
+          "youtube_video_id": "Env8gAr_QnE",
+          "url": "https://www.youtube.com/watch?v=Env8gAr_QnE",
+          "start_seconds": 0,
+          "end_seconds": null,
+          "play_mode": "full_video",
+          "source": "PureGym",
+          "verification": "embed_verified_2026-09-27"
+        }
+      },
+      {
+        "id": "chest-dip",
+        "name_en": "Chest Dip",
+        "name_he": "מקבילים בדגש חזה",
+        "category": "chest",
+        "primary_muscles": [
+          "chest",
+          "triceps"
+        ],
+        "equipment": [
+          "dip_bars"
+        ],
+        "difficulty": "intermediate",
+        "movement_pattern": "vertical-push",
+        "video": {
+          "provider": "youtube",
+          "youtube_video_id": "2HYAeF6o7Bc",
+          "url": "https://www.youtube.com/watch?v=2HYAeF6o7Bc",
+          "start_seconds": 0,
+          "end_seconds": null,
+          "play_mode": "full_video",
+          "source": "PureGym",
+          "verification": "embed_verified_2026-09-27"
+        }
+      },
+      {
+        "id": "lat-pulldown",
+        "name_en": "Lat Pulldown",
+        "name_he": "משיכת פולי עליון",
+        "category": "back",
+        "primary_muscles": [
+          "lats",
+          "biceps"
+        ],
+        "equipment": [
+          "cable_machine"
+        ],
+        "difficulty": "beginner",
+        "movement_pattern": "vertical-pull",
+        "video": {
+          "provider": "youtube",
+          "youtube_video_id": "JGeRYIZdojU",
+          "url": "https://www.youtube.com/watch?v=JGeRYIZdojU",
+          "start_seconds": 0,
+          "end_seconds": null,
+          "play_mode": "full_video",
+          "source": "PureGym",
+          "verification": "embed_verified_2026-09-27"
+        }
+      },
+      {
+        "id": "close-grip-lat-pulldown",
+        "name_en": "Close Grip Lat Pulldown",
+        "name_he": "פולי עליון אחיזה צרה",
+        "category": "back",
+        "primary_muscles": [
+          "lats",
+          "biceps"
+        ],
+        "equipment": [
+          "cable_machine"
+        ],
+        "difficulty": "beginner",
+        "movement_pattern": "vertical-pull",
+        "video": {
+          "provider": "youtube",
+          "youtube_video_id": "IjoFCmLX7z0",
+          "url": "https://www.youtube.com/watch?v=IjoFCmLX7z0",
+          "start_seconds": 0,
+          "end_seconds": null,
+          "play_mode": "full_video",
+          "source": "PureGym",
+          "verification": "embed_verified_2026-09-27"
+        }
+      },
+      {
+        "id": "pull-up",
+        "name_en": "Pull Up",
+        "name_he": "מתח",
+        "category": "back",
+        "primary_muscles": [
+          "lats",
+          "upper_back",
+          "biceps"
+        ],
+        "equipment": [
+          "pullup_bar"
+        ],
+        "difficulty": "intermediate",
+        "movement_pattern": "vertical-pull",
+        "video": {
+          "provider": "youtube",
+          "youtube_video_id": "PHdHnZcbsB8",
+          "url": "https://www.youtube.com/watch?v=PHdHnZcbsB8",
+          "start_seconds": 0,
+          "end_seconds": null,
+          "play_mode": "full_video",
+          "source": "PureGym",
+          "verification": "embed_verified_2026-09-27"
+        }
+      },
+      {
+        "id": "barbell-bent-over-row",
+        "name_en": "Barbell Bent Over Row",
+        "name_he": "חתירה עם מוט",
+        "category": "back",
+        "primary_muscles": [
+          "lats",
+          "upper_back",
+          "rear_delts"
+        ],
+        "equipment": [
+          "barbell"
+        ],
+        "difficulty": "intermediate",
+        "movement_pattern": "horizontal-pull",
+        "video": {
+          "provider": "youtube",
+          "youtube_video_id": "FsK19s8eGFs",
+          "url": "https://www.youtube.com/watch?v=FsK19s8eGFs",
+          "start_seconds": 0,
+          "end_seconds": null,
+          "play_mode": "full_video",
+          "source": "PureGym",
+          "verification": "embed_verified_2026-09-27"
+        }
+      },
+      {
+        "id": "dumbbell-bent-over-row",
+        "name_en": "Dumbbell Bent Over Row",
+        "name_he": "חתירה עם משקולות",
+        "category": "back",
+        "primary_muscles": [
+          "lats",
+          "upper_back"
+        ],
+        "equipment": [
+          "dumbbells"
+        ],
+        "difficulty": "beginner",
+        "movement_pattern": "horizontal-pull",
+        "video": {
+          "provider": "youtube",
+          "youtube_video_id": "6gvmcqr226U",
+          "url": "https://www.youtube.com/watch?v=6gvmcqr226U",
+          "start_seconds": 0,
+          "end_seconds": null,
+          "play_mode": "full_video",
+          "source": "PureGym",
+          "verification": "embed_verified_2026-09-27"
+        }
+      },
+      {
+        "id": "incline-chest-supported-row",
+        "name_en": "Incline Chest Supported Row",
+        "name_he": "חתירה נתמכת חזה",
+        "category": "back",
+        "primary_muscles": [
+          "upper_back",
+          "lats",
+          "rear_delts"
+        ],
+        "equipment": [
+          "dumbbells",
+          "incline_bench"
+        ],
+        "difficulty": "beginner",
+        "movement_pattern": "horizontal-pull",
+        "video": {
+          "provider": "youtube",
+          "youtube_video_id": "Nx0TzjgsI-0",
+          "url": "https://www.youtube.com/watch?v=Nx0TzjgsI-0",
+          "start_seconds": 0,
+          "end_seconds": null,
+          "play_mode": "full_video",
+          "source": "PureGym",
+          "verification": "embed_verified_2026-09-27"
+        }
+      },
+      {
+        "id": "face-pull",
+        "name_en": "Face Pull",
+        "name_he": "פייס פול",
+        "category": "back",
+        "primary_muscles": [
+          "rear_delts",
+          "upper_back"
+        ],
+        "equipment": [
+          "cable_machine",
+          "rope"
+        ],
+        "difficulty": "beginner",
+        "movement_pattern": "horizontal-pull",
+        "video": {
+          "provider": "youtube",
+          "youtube_video_id": "0Po47vvj9g4",
+          "url": "https://www.youtube.com/watch?v=0Po47vvj9g4",
+          "start_seconds": 0,
+          "end_seconds": null,
+          "play_mode": "full_video",
+          "source": "PureGym",
+          "verification": "embed_verified_2026-09-27"
+        }
+      },
+      {
+        "id": "straight-arm-lat-pulldown",
+        "name_en": "Straight Arm Lat Pulldown",
+        "name_he": "משיכת פולי בידיים ישרות",
+        "category": "back",
+        "primary_muscles": [
+          "lats"
+        ],
+        "equipment": [
+          "cable_machine"
+        ],
+        "difficulty": "beginner",
+        "movement_pattern": "shoulder-extension",
+        "video": {
+          "provider": "youtube",
+          "youtube_video_id": "ey9Fv3FGrRg",
+          "url": "https://www.youtube.com/watch?v=ey9Fv3FGrRg",
+          "start_seconds": 0,
+          "end_seconds": null,
+          "play_mode": "full_video",
+          "source": "PureGym",
+          "verification": "embed_verified_2026-09-27"
+        }
+      },
+      {
+        "id": "shoulder-press-machine",
+        "name_en": "Shoulder Press Machine",
+        "name_he": "לחיצת כתפיים במכונה",
+        "category": "shoulders",
+        "primary_muscles": [
+          "delts",
+          "triceps"
+        ],
+        "equipment": [
+          "shoulder_press_machine"
+        ],
+        "difficulty": "beginner",
+        "movement_pattern": "vertical-push",
+        "video": {
+          "provider": "youtube",
+          "youtube_video_id": "GcY6TZxfS0k",
+          "url": "https://www.youtube.com/watch?v=GcY6TZxfS0k",
+          "start_seconds": 0,
+          "end_seconds": null,
+          "play_mode": "full_video",
+          "source": "PureGym",
+          "verification": "embed_verified_2026-09-27"
+        }
+      },
+      {
+        "id": "dumbbell-shoulder-press",
+        "name_en": "Dumbbell Shoulder Press",
+        "name_he": "לחיצת כתפיים עם משקולות",
+        "category": "shoulders",
+        "primary_muscles": [
+          "delts",
+          "triceps"
+        ],
+        "equipment": [
+          "dumbbells"
+        ],
+        "difficulty": "beginner",
+        "movement_pattern": "vertical-push",
+        "video": {
+          "provider": "youtube",
+          "youtube_video_id": "aI2hGzsAMXs",
+          "url": "https://www.youtube.com/watch?v=aI2hGzsAMXs",
+          "start_seconds": 0,
+          "end_seconds": null,
+          "play_mode": "full_video",
+          "source": "PureGym",
+          "verification": "embed_verified_2026-09-27"
+        }
+      },
+      {
+        "id": "rear-delt-fly",
+        "name_en": "Rear Delt Fly",
+        "name_he": "פרפר כתף אחורית",
+        "category": "shoulders",
+        "primary_muscles": [
+          "rear_delts",
+          "upper_back"
+        ],
+        "equipment": [
+          "dumbbells"
+        ],
+        "difficulty": "beginner",
+        "movement_pattern": "shoulder-horizontal-abduction",
+        "video": {
+          "provider": "youtube",
+          "youtube_video_id": "nlkF7_2O_Lw",
+          "url": "https://www.youtube.com/watch?v=nlkF7_2O_Lw",
+          "start_seconds": 0,
+          "end_seconds": null,
+          "play_mode": "full_video",
+          "source": "PureGym",
+          "verification": "embed_verified_2026-09-27"
+        }
+      },
+      {
+        "id": "dumbbell-front-raise",
+        "name_en": "Dumbbell Front Raise",
+        "name_he": "הרמה קדמית עם משקולות",
+        "category": "shoulders",
+        "primary_muscles": [
+          "front_delts"
+        ],
+        "equipment": [
+          "dumbbells"
+        ],
+        "difficulty": "beginner",
+        "movement_pattern": "shoulder-flexion",
+        "video": {
+          "provider": "youtube",
+          "youtube_video_id": "zkP0MsTcIVU",
+          "url": "https://www.youtube.com/watch?v=zkP0MsTcIVU",
+          "start_seconds": 0,
+          "end_seconds": null,
+          "play_mode": "full_video",
+          "source": "PureGym",
+          "verification": "embed_verified_2026-09-27"
+        }
+      },
+      {
+        "id": "barbell-bicep-curl",
+        "name_en": "Barbell Bicep Curl",
+        "name_he": "כפיפת מרפקים עם מוט",
+        "category": "arms",
+        "primary_muscles": [
+          "biceps"
+        ],
+        "equipment": [
+          "barbell"
+        ],
+        "difficulty": "beginner",
+        "movement_pattern": "elbow-flexion",
+        "video": {
+          "provider": "youtube",
+          "youtube_video_id": "N5x5M1x1Gd0",
+          "url": "https://www.youtube.com/watch?v=N5x5M1x1Gd0",
+          "start_seconds": 0,
+          "end_seconds": null,
+          "play_mode": "full_video",
+          "source": "PureGym",
+          "verification": "embed_verified_2026-09-27"
+        }
+      },
+      {
+        "id": "dumbbell-bicep-curl",
+        "name_en": "Dumbbell Bicep Curl",
+        "name_he": "כפיפת מרפקים עם משקולות",
+        "category": "arms",
+        "primary_muscles": [
+          "biceps"
+        ],
+        "equipment": [
+          "dumbbells"
+        ],
+        "difficulty": "beginner",
+        "movement_pattern": "elbow-flexion",
+        "video": {
+          "provider": "youtube",
+          "youtube_video_id": "MtXdEcW3Eog",
+          "url": "https://www.youtube.com/watch?v=MtXdEcW3Eog",
+          "start_seconds": 0,
+          "end_seconds": null,
+          "play_mode": "full_video",
+          "source": "PureGym",
+          "verification": "embed_verified_2026-09-27"
+        }
+      },
+      {
+        "id": "hammer-curl",
+        "name_en": "Hammer Curl",
+        "name_he": "כפיפת פטיש",
+        "category": "arms",
+        "primary_muscles": [
+          "biceps",
+          "brachialis",
+          "forearms"
+        ],
+        "equipment": [
+          "dumbbells"
+        ],
+        "difficulty": "beginner",
+        "movement_pattern": "elbow-flexion",
+        "video": {
+          "provider": "youtube",
+          "youtube_video_id": "B4RznoFvTl4",
+          "url": "https://www.youtube.com/watch?v=B4RznoFvTl4",
+          "start_seconds": 0,
+          "end_seconds": null,
+          "play_mode": "full_video",
+          "source": "PureGym",
+          "verification": "embed_verified_2026-09-27"
+        }
+      },
+      {
+        "id": "cable-bicep-curl",
+        "name_en": "Cable Bicep Curl",
+        "name_he": "כפיפת מרפקים בכבל",
+        "category": "arms",
+        "primary_muscles": [
+          "biceps"
+        ],
+        "equipment": [
+          "cable_machine"
+        ],
+        "difficulty": "beginner",
+        "movement_pattern": "elbow-flexion",
+        "video": {
+          "provider": "youtube",
+          "youtube_video_id": "GNlopToAZyg",
+          "url": "https://www.youtube.com/watch?v=GNlopToAZyg",
+          "start_seconds": 0,
+          "end_seconds": null,
+          "play_mode": "full_video",
+          "source": "PureGym",
+          "verification": "embed_verified_2026-09-27"
+        }
+      },
+      {
+        "id": "preacher-curl",
+        "name_en": "Preacher Curl",
+        "name_he": "כפיפת מרפקים על ספסל כומר",
+        "category": "arms",
+        "primary_muscles": [
+          "biceps"
+        ],
+        "equipment": [
+          "preacher_bench",
+          "ez_bar_or_dumbbell"
+        ],
+        "difficulty": "beginner",
+        "movement_pattern": "elbow-flexion",
+        "video": {
+          "provider": "youtube",
+          "youtube_video_id": "Zbs3ko8ycyg",
+          "url": "https://www.youtube.com/watch?v=Zbs3ko8ycyg",
+          "start_seconds": 0,
+          "end_seconds": null,
+          "play_mode": "full_video",
+          "source": "PureGym",
+          "verification": "embed_verified_2026-09-27"
+        }
+      },
+      {
+        "id": "skull-crushers",
+        "name_en": "Skull Crushers",
+        "name_he": "פשיטת מרפקים בשכיבה",
+        "category": "arms",
+        "primary_muscles": [
+          "triceps"
+        ],
+        "equipment": [
+          "ez_bar_or_barbell",
+          "bench"
+        ],
+        "difficulty": "intermediate",
+        "movement_pattern": "elbow-extension",
+        "video": {
+          "provider": "youtube",
+          "youtube_video_id": "sDxcKjCqXAo",
+          "url": "https://www.youtube.com/watch?v=sDxcKjCqXAo",
+          "start_seconds": 0,
+          "end_seconds": null,
+          "play_mode": "full_video",
+          "source": "PureGym",
+          "verification": "embed_verified_2026-09-27"
+        }
+      },
+      {
+        "id": "plank",
+        "name_en": "Plank",
+        "name_he": "פלאנק",
+        "category": "core",
+        "primary_muscles": [
+          "core"
+        ],
+        "equipment": [
+          "bodyweight"
+        ],
+        "difficulty": "beginner",
+        "movement_pattern": "anti-extension",
+        "video": {
+          "provider": "youtube",
+          "youtube_video_id": "iDSHokfXqyA",
+          "url": "https://www.youtube.com/watch?v=iDSHokfXqyA",
+          "start_seconds": 0,
+          "end_seconds": null,
+          "play_mode": "full_video",
+          "source": "PureGym",
+          "verification": "embed_verified_2026-09-27"
+        }
+      },
+      {
+        "id": "side-plank",
+        "name_en": "Side Plank",
+        "name_he": "פלאנק צידי",
+        "category": "core",
+        "primary_muscles": [
+          "obliques",
+          "core"
+        ],
+        "equipment": [
+          "bodyweight"
+        ],
+        "difficulty": "beginner",
+        "movement_pattern": "anti-lateral-flexion",
+        "video": {
+          "provider": "youtube",
+          "youtube_video_id": "Oe9Tp9SvTCE",
+          "url": "https://www.youtube.com/watch?v=Oe9Tp9SvTCE",
+          "start_seconds": 0,
+          "end_seconds": null,
+          "play_mode": "full_video",
+          "source": "PureGym",
+          "verification": "embed_verified_2026-09-27"
+        }
+      },
+      {
+        "id": "russian-twist",
+        "name_en": "Russian Twist",
+        "name_he": "טוויסט רוסי",
+        "category": "core",
+        "primary_muscles": [
+          "obliques",
+          "core"
+        ],
+        "equipment": [
+          "bodyweight_or_weight"
+        ],
+        "difficulty": "beginner",
+        "movement_pattern": "rotation",
+        "video": {
+          "provider": "youtube",
+          "youtube_video_id": "99T1EfpMwPA",
+          "url": "https://www.youtube.com/watch?v=99T1EfpMwPA",
+          "start_seconds": 0,
+          "end_seconds": null,
+          "play_mode": "full_video",
+          "source": "PureGym",
+          "verification": "embed_verified_2026-09-27"
+        }
+      },
+      {
+        "id": "deadbug",
+        "name_en": "Deadbug",
+        "name_he": "דד באג",
+        "category": "core",
+        "primary_muscles": [
+          "core"
+        ],
+        "equipment": [
+          "bodyweight"
+        ],
+        "difficulty": "beginner",
+        "movement_pattern": "anti-extension",
+        "video": {
+          "provider": "youtube",
+          "youtube_video_id": "9RK9UUgKIQE",
+          "url": "https://www.youtube.com/watch?v=9RK9UUgKIQE",
+          "start_seconds": 0,
+          "end_seconds": null,
+          "play_mode": "full_video",
+          "source": "PureGym",
+          "verification": "embed_verified_2026-09-27"
+        }
+      },
+      {
+        "id": "hanging-knee-raise",
+        "name_en": "Hanging Knee Raise",
+        "name_he": "הרמת ברכיים בתלייה",
+        "category": "core",
+        "primary_muscles": [
+          "abs",
+          "hip_flexors"
+        ],
+        "equipment": [
+          "pullup_bar"
+        ],
+        "difficulty": "intermediate",
+        "movement_pattern": "trunk-flexion",
+        "video": {
+          "provider": "youtube",
+          "youtube_video_id": "O7iDA3ory-w",
+          "url": "https://www.youtube.com/watch?v=O7iDA3ory-w",
+          "start_seconds": 0,
+          "end_seconds": null,
+          "play_mode": "full_video",
+          "source": "PureGym",
+          "verification": "embed_verified_2026-09-27"
+        }
+      },
+      {
+        "id": "bicycle-crunch",
+        "name_en": "Bicycle Crunch",
+        "name_he": "כפיפות אופניים",
+        "category": "core",
+        "primary_muscles": [
+          "abs",
+          "obliques"
+        ],
+        "equipment": [
+          "bodyweight"
+        ],
+        "difficulty": "beginner",
+        "movement_pattern": "trunk-flexion-rotation",
+        "video": {
+          "provider": "youtube",
+          "youtube_video_id": "wnuLak2onoA",
+          "url": "https://www.youtube.com/watch?v=wnuLak2onoA",
+          "start_seconds": 0,
+          "end_seconds": null,
+          "play_mode": "full_video",
+          "source": "PureGym",
+          "verification": "embed_verified_2026-09-27"
+        }
+      },
+      {
+        "id": "ab-wheel-rollout",
+        "name_en": "Ab Wheel Rollout",
+        "name_he": "גלגל בטן",
+        "category": "core",
+        "primary_muscles": [
+          "abs",
+          "core"
+        ],
+        "equipment": [
+          "ab_wheel"
+        ],
+        "difficulty": "intermediate",
+        "movement_pattern": "anti-extension",
+        "video": {
+          "provider": "youtube",
+          "youtube_video_id": "SBO5aFR09D4",
+          "url": "https://www.youtube.com/watch?v=SBO5aFR09D4",
+          "start_seconds": 0,
+          "end_seconds": null,
+          "play_mode": "full_video",
+          "source": "PureGym",
+          "verification": "embed_verified_2026-09-27"
+        }
+      },
+      {
+        "id": "pallof-press",
+        "name_en": "Pallof Press",
+        "name_he": "פאלוף פרס",
+        "category": "core",
+        "primary_muscles": [
+          "obliques",
+          "core"
+        ],
+        "equipment": [
+          "cable_machine_or_band"
+        ],
+        "difficulty": "beginner",
+        "movement_pattern": "anti-rotation",
+        "video": {
+          "provider": "youtube",
+          "youtube_video_id": "HXrLaqNIkTs",
+          "url": "https://www.youtube.com/watch?v=HXrLaqNIkTs",
+          "start_seconds": 0,
+          "end_seconds": null,
+          "play_mode": "full_video",
+          "source": "PureGym",
+          "verification": "embed_verified_2026-09-27"
+        }
+      },
+      {
+        "id": "burpee",
+        "name_en": "Burpee",
+        "name_he": "ברפי",
+        "category": "full_body",
+        "primary_muscles": [
+          "full_body"
+        ],
+        "equipment": [
+          "bodyweight"
+        ],
+        "difficulty": "intermediate",
+        "movement_pattern": "conditioning",
+        "video": {
+          "provider": "youtube",
+          "youtube_video_id": "1yPltRIm59E",
+          "url": "https://www.youtube.com/watch?v=1yPltRIm59E",
+          "start_seconds": 0,
+          "end_seconds": null,
+          "play_mode": "full_video",
+          "source": "PureGym",
+          "verification": "embed_verified_2026-09-27"
+        }
+      },
+      {
+        "id": "mountain-climber",
+        "name_en": "Mountain Climber",
+        "name_he": "מטפס הרים",
+        "category": "full_body",
+        "primary_muscles": [
+          "core",
+          "shoulders",
+          "quadriceps"
+        ],
+        "equipment": [
+          "bodyweight"
+        ],
+        "difficulty": "beginner",
+        "movement_pattern": "conditioning",
+        "video": {
+          "provider": "youtube",
+          "youtube_video_id": "kLh-uczlPLg",
+          "url": "https://www.youtube.com/watch?v=kLh-uczlPLg",
+          "start_seconds": 0,
+          "end_seconds": null,
+          "play_mode": "full_video",
+          "source": "PureGym",
+          "verification": "embed_verified_2026-09-27"
+        }
+      },
+      {
+        "id": "two-hand-kettlebell-swing",
+        "name_en": "Two Handed Kettlebell Swing",
+        "name_he": "סווינג קטלבל בשתי ידיים",
+        "category": "full_body",
+        "primary_muscles": [
+          "glutes",
+          "hamstrings",
+          "back",
+          "core"
+        ],
+        "equipment": [
+          "kettlebell"
+        ],
+        "difficulty": "intermediate",
+        "movement_pattern": "hinge-power",
+        "video": {
+          "provider": "youtube",
+          "youtube_video_id": "1FjAoO5McVI",
+          "url": "https://www.youtube.com/watch?v=1FjAoO5McVI",
+          "start_seconds": 0,
+          "end_seconds": null,
+          "play_mode": "full_video",
+          "source": "PureGym",
+          "verification": "embed_verified_2026-09-27"
+        }
+      }
+    ]
+  },
+  "workouts": {
+    "version": "1.0",
+    "generated_at": "2026-09-27",
+    "templates": [
+      {
+        "id": "full-body-a",
+        "name_he": "גוף מלא A",
+        "goal": "general_strength_and_muscle",
+        "exercises": [
+          {
+            "exercise_id": "goblet-squat",
+            "sets": 3,
+            "reps": "8-12",
+            "rest_seconds": 90
+          },
+          {
+            "exercise_id": "dumbbell-bench-press",
+            "sets": 3,
+            "reps": "8-12",
+            "rest_seconds": 90
+          },
+          {
+            "exercise_id": "lat-pulldown",
+            "sets": 3,
+            "reps": "8-12",
+            "rest_seconds": 90
+          },
+          {
+            "exercise_id": "romanian-deadlift",
+            "sets": 3,
+            "reps": "8-10",
+            "rest_seconds": 120
+          },
+          {
+            "exercise_id": "shoulder-press-machine",
+            "sets": 2,
+            "reps": "10-12",
+            "rest_seconds": 75
+          },
+          {
+            "exercise_id": "deadbug",
+            "sets": 3,
+            "reps": "8-12 each side",
+            "rest_seconds": 45
+          }
+        ]
+      },
+      {
+        "id": "full-body-b",
+        "name_he": "גוף מלא B",
+        "goal": "general_strength_and_muscle",
+        "exercises": [
+          {
+            "exercise_id": "seated-leg-press",
+            "sets": 3,
+            "reps": "10-12",
+            "rest_seconds": 90
+          },
+          {
+            "exercise_id": "incline-dumbbell-press",
+            "sets": 3,
+            "reps": "8-12",
+            "rest_seconds": 90
+          },
+          {
+            "exercise_id": "incline-chest-supported-row",
+            "sets": 3,
+            "reps": "8-12",
+            "rest_seconds": 90
+          },
+          {
+            "exercise_id": "barbell-hip-thrust",
+            "sets": 3,
+            "reps": "8-12",
+            "rest_seconds": 90
+          },
+          {
+            "exercise_id": "face-pull",
+            "sets": 2,
+            "reps": "12-15",
+            "rest_seconds": 60
+          },
+          {
+            "exercise_id": "pallof-press",
+            "sets": 3,
+            "reps": "10-12 each side",
+            "rest_seconds": 45
+          }
+        ]
+      },
+      {
+        "id": "upper-body",
+        "name_he": "פלג גוף עליון",
+        "goal": "upper_body_strength_and_muscle",
+        "exercises": [
+          {
+            "exercise_id": "barbell-bench-press",
+            "sets": 3,
+            "reps": "6-10",
+            "rest_seconds": 120
+          },
+          {
+            "exercise_id": "barbell-bent-over-row",
+            "sets": 3,
+            "reps": "6-10",
+            "rest_seconds": 120
+          },
+          {
+            "exercise_id": "dumbbell-shoulder-press",
+            "sets": 3,
+            "reps": "8-12",
+            "rest_seconds": 90
+          },
+          {
+            "exercise_id": "close-grip-lat-pulldown",
+            "sets": 3,
+            "reps": "8-12",
+            "rest_seconds": 90
+          },
+          {
+            "exercise_id": "rear-delt-fly",
+            "sets": 2,
+            "reps": "12-15",
+            "rest_seconds": 60
+          },
+          {
+            "exercise_id": "hammer-curl",
+            "sets": 2,
+            "reps": "10-15",
+            "rest_seconds": 60
+          },
+          {
+            "exercise_id": "skull-crushers",
+            "sets": 2,
+            "reps": "10-15",
+            "rest_seconds": 60
+          }
+        ]
+      },
+      {
+        "id": "lower-body",
+        "name_he": "פלג גוף תחתון",
+        "goal": "lower_body_strength_and_muscle",
+        "exercises": [
+          {
+            "exercise_id": "barbell-back-squat",
+            "sets": 3,
+            "reps": "6-10",
+            "rest_seconds": 120
+          },
+          {
+            "exercise_id": "romanian-deadlift",
+            "sets": 3,
+            "reps": "8-10",
+            "rest_seconds": 120
+          },
+          {
+            "exercise_id": "reverse-lunge",
+            "sets": 3,
+            "reps": "8-12 each side",
+            "rest_seconds": 90
+          },
+          {
+            "exercise_id": "lying-leg-curl",
+            "sets": 3,
+            "reps": "10-15",
+            "rest_seconds": 75
+          },
+          {
+            "exercise_id": "leg-extension",
+            "sets": 2,
+            "reps": "10-15",
+            "rest_seconds": 60
+          },
+          {
+            "exercise_id": "glute-bridge",
+            "sets": 2,
+            "reps": "12-15",
+            "rest_seconds": 60
+          },
+          {
+            "exercise_id": "plank",
+            "sets": 3,
+            "reps": "30-60 sec",
+            "rest_seconds": 45
+          }
+        ]
+      }
+    ]
+  }
+}

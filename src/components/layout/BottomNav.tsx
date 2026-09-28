@@ -1,5 +1,5 @@
 import React from 'react';
-import { PlusCircle, Flame, Scale, Settings } from 'lucide-react';
+import { PlusCircle, Flame, Scale, Settings, Dumbbell } from 'lucide-react';
 import { NavTab } from '../../types';
 
 interface BottomNavProps {
@@ -84,6 +84,18 @@ export const BottomNav: React.FC<BottomNavProps> = ({
           <span className="text-[12px] tracking-tight mt-1">
             משקל
           </span>
+        </button>
+
+        <button
+          id="nav-tab-workouts"
+          type="button"
+          onClick={() => handleTabClick('workouts')}
+          className={`flex flex-col items-center justify-center flex-1 min-h-[48px] py-1 transition-all ${activeTab === 'workouts' ? 'text-teal-600 font-semibold' : 'text-slate-500 hover:text-slate-800'}`}
+          aria-label="תוכניות אימון וספריית תרגילים"
+          aria-current={activeTab === 'workouts' ? 'page' : undefined}
+        >
+          <Dumbbell className={`w-5 h-5 ${activeTab === 'workouts' ? 'stroke-[2.5]' : 'stroke-2'}`} />
+          <span className="text-[12px] tracking-tight mt-1">אימונים</span>
         </button>
 
         {/* הגדרות */}

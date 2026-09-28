@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { lazy, Suspense, useState } from 'react';
 import { NavTab } from './types';
 import { AppLayout } from './components/layout/AppLayout';
 import { AppProvider, useApp } from './context/AppContext';
@@ -6,6 +6,7 @@ import { OnboardingWizard } from './components/onboarding/OnboardingWizard';
 import { TodayView } from './views/TodayView';
 import { WeightView } from './views/WeightView';
 import { SettingsView } from './views/SettingsView';
+const WorkoutsView = lazy(() => import('./views/workouts/WorkoutsView').then((module) => ({ default: module.WorkoutsView })));
 import { useNotificationScheduler } from './hooks/useNotificationScheduler';
 import { ErrorBoundary } from './components/common/ErrorBoundary';
 
@@ -54,6 +55,14 @@ function MainAppContent() {
       {activeTab === 'weight' && (
         <div id="view-weight">
           <WeightView />
+        </div>
+      )}
+
+      {activeTab === 'workouts' && (
+        <div id="view-workouts">
+          <Suspense fallback={<div className="rounded-2xl bg-white p-6 text-center text-slate-500">טוען אימונים…</div>}>
+            <WorkoutsView />
+          </Suspense>
         </div>
       )}
 

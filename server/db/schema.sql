@@ -1,5 +1,6 @@
+-- Run this once against the Neon database. API ownership checks are enforced server-side.
 -- ==============================================================================
--- Supabase Schema for Hebrew Calorie & Nutrition Tracker
+-- PostgreSQL schema for DailyCalory on Neon
 -- ==============================================================================
 
 -- 1. Create updated_at trigger function
@@ -43,7 +44,7 @@ CREATE TABLE IF NOT EXISTS food_reports (
   id TEXT PRIMARY KEY,
   user_id TEXT NOT NULL,
   client_request_id TEXT,
-  input_type TEXT NOT NULL CHECK (input_type IN ('text', 'image', 'voice', 'manual')),
+  input_type TEXT NOT NULL CHECK (input_type IN ('text', 'image', 'photo', 'voice', 'manual')),
   original_text TEXT,
   image_url TEXT,
   status TEXT NOT NULL DEFAULT 'saved' CHECK (status IN ('draft', 'analyzing', 'saved', 'deleted')),
@@ -132,38 +133,43 @@ BEFORE UPDATE ON water_entries
 FOR EACH ROW
 EXECUTE FUNCTION set_updated_at();
 
--- 8. Row Level Security (RLS) configuration
-ALTER TABLE user_profiles ENABLE ROW LEVEL SECURITY;
-ALTER TABLE food_reports ENABLE ROW LEVEL SECURITY;
-ALTER TABLE food_components ENABLE ROW LEVEL SECURITY;
-ALTER TABLE weight_entries ENABLE ROW LEVEL SECURITY;
-ALTER TABLE user_food_memories ENABLE ROW LEVEL SECURITY;
-ALTER TABLE water_entries ENABLE ROW LEVEL SECURITY;
 
--- Anonymous/Authenticated policy templates (allow matching auth.uid() or anon with user_id header)
-CREATE POLICY "Allow individual read on user_profiles" ON user_profiles
-  FOR SELECT USING (auth.uid()::text = user_id OR user_id = 'local-user-1');
+-- 9. Workout plans. Exercise definitions remain versioned application seed data;
+-- plan items retain only stable exercise IDs and per-plan prescription values.
+CREATE TABLE IF NOT EXISTS workout_plans (
+  id TEXT PRIMARY KEY,
+  user_id TEXT NOT NULL,
+  name TEXT NOT NULL,
+  duration_weeks INTEGER NOT NULL CHECK (duration_weeks BETWEEN 1 AND 52),
+  days_per_week INTEGER NOT NULL CHECK (days_per_week BETWEEN 1 AND 7),
+  focuses TEXT[] NOT NULL DEFAULT '{}',
+  duration_min_minutes INTEGER NOT NULL CHECK (duration_min_minutes BETWEEN 10 AND 180),
+  duration_max_minutes INTEGER NOT NULL CHECK (duration_max_minutes BETWEEN duration_min_minutes AND 180),
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+CREATE INDEX IF NOT EXISTS idx_workout_plans_user_created ON workout_plans(user_id, created_at DESC);
+DROP TRIGGER IF EXISTS trg_workout_plans_updated_at ON workout_plans;
+CREATE TRIGGER trg_workout_plans_updated_at BEFORE UPDATE ON workout_plans
+FOR EACH ROW EXECUTE FUNCTION set_updated_at();
 
-CREATE POLICY "Allow individual insert/update on user_profiles" ON user_profiles
-  FOR ALL USING (auth.uid()::text = user_id OR user_id = 'local-user-1');
+CREATE TABLE IF NOT EXISTS workout_plan_days (
+  id TEXT PRIMARY KEY,
+  plan_id TEXT NOT NULL REFERENCES workout_plans(id) ON DELETE CASCADE,
+  day_number INTEGER NOT NULL CHECK (day_number BETWEEN 1 AND 7),
+  focus TEXT NOT NULL CHECK (focus IN ('core', 'legs', 'cardio', 'full_body')),
+  UNIQUE(plan_id, day_number)
+);
+CREATE INDEX IF NOT EXISTS idx_workout_plan_days_plan ON workout_plan_days(plan_id, day_number);
 
-CREATE POLICY "Allow individual access on food_reports" ON food_reports
-  FOR ALL USING (auth.uid()::text = user_id OR user_id = 'local-user-1');
-
-CREATE POLICY "Allow individual access on food_components" ON food_components
-  FOR ALL USING (
-    EXISTS (
-      SELECT 1 FROM food_reports
-      WHERE food_reports.id = food_components.report_id
-      AND (food_reports.user_id = auth.uid()::text OR food_reports.user_id = 'local-user-1')
-    )
-  );
-
-CREATE POLICY "Allow individual access on weight_entries" ON weight_entries
-  FOR ALL USING (auth.uid()::text = user_id OR user_id = 'local-user-1');
-
-CREATE POLICY "Allow individual access on user_food_memories" ON user_food_memories
-  FOR ALL USING (auth.uid()::text = user_id OR user_id = 'local-user-1');
-
-CREATE POLICY "Allow individual access on water_entries" ON water_entries
-  FOR ALL USING (auth.uid()::text = user_id OR user_id = 'local-user-1');
+CREATE TABLE IF NOT EXISTS workout_plan_items (
+  id TEXT PRIMARY KEY,
+  day_id TEXT NOT NULL REFERENCES workout_plan_days(id) ON DELETE CASCADE,
+  exercise_id TEXT NOT NULL,
+  sets INTEGER NOT NULL CHECK (sets BETWEEN 1 AND 20),
+  target_type TEXT NOT NULL CHECK (target_type IN ('reps', 'time')),
+  target_value TEXT NOT NULL,
+  rest_seconds INTEGER NOT NULL DEFAULT 60 CHECK (rest_seconds BETWEEN 0 AND 600),
+  sort_order INTEGER NOT NULL DEFAULT 0
+);
+CREATE INDEX IF NOT EXISTS idx_workout_plan_items_day_order ON workout_plan_items(day_id, sort_order);

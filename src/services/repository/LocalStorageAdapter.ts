@@ -3,6 +3,7 @@ import {
   FoodReport,
   WeightEntry,
   UserFoodMemory,
+  WorkoutPlan,
 } from '../../types';
 import {
   IDataRepository,
@@ -16,6 +17,7 @@ export const STORAGE_KEY_REPORTS = 'calories_food_reports_v1';
 export const STORAGE_KEY_WEIGHTS = 'calories_weights_v1';
 export const STORAGE_KEY_MEMORIES = 'calories_food_memories_v1';
 export const STORAGE_KEY_WATER = 'calories_water_entries_v1';
+export const STORAGE_KEY_WORKOUT_PLANS = 'calories_workout_plans_v1';
 
 export const DEFAULT_PROFILE: UserProfile = {
   userId: 'local-user-1',
@@ -404,24 +406,43 @@ export class LocalStorageAdapter implements IDataRepository {
     return next;
   }
 
+  async getWorkoutPlans(userId?: string): Promise<WorkoutPlan[]> {
+    const plans = this.getItem<WorkoutPlan[]>(STORAGE_KEY_WORKOUT_PLANS, []);
+    return userId ? plans.filter((plan) => plan.userId === userId) : plans;
+  }
+
+  async saveWorkoutPlan(plan: WorkoutPlan): Promise<WorkoutPlan> {
+    const plans = this.getItem<WorkoutPlan[]>(STORAGE_KEY_WORKOUT_PLANS, []);
+    this.setItem(STORAGE_KEY_WORKOUT_PLANS, [plan, ...plans.filter((item) => item.id !== plan.id)]);
+    return plan;
+  }
+
+  async deleteWorkoutPlan(planId: string): Promise<boolean> {
+    const plans = this.getItem<WorkoutPlan[]>(STORAGE_KEY_WORKOUT_PLANS, []);
+    this.setItem(STORAGE_KEY_WORKOUT_PLANS, plans.filter((plan) => plan.id !== planId));
+    return true;
+  }
+
   // --- Backup, Import & Reset ---
   async exportAllData(userId?: string): Promise<AppBackupData> {
-    const [userProfile, foodReports, weightEntries, foodMemories, waterEntries] = await Promise.all([
+    const [userProfile, foodReports, weightEntries, foodMemories, waterEntries, workoutPlans] = await Promise.all([
       this.getProfile(userId),
       this.getReports(userId),
       this.getWeightEntries(userId),
       this.getFoodMemories(userId),
       this.getWaterEntries(),
+      this.getWorkoutPlans(userId),
     ]);
 
     return {
       exportedAt: new Date().toISOString(),
-      version: '1.2',
+      version: '1.3',
       userProfile,
       foodReports,
       weightEntries,
       foodMemories,
       waterEntries,
+      workoutPlans,
     };
   }
 
@@ -442,6 +463,9 @@ export class LocalStorageAdapter implements IDataRepository {
       if (data.waterEntries && typeof data.waterEntries === 'object') {
         this.setItem(STORAGE_KEY_WATER, data.waterEntries);
       }
+      if (Array.isArray(data.workoutPlans)) {
+        this.setItem(STORAGE_KEY_WORKOUT_PLANS, data.workoutPlans);
+      }
       return true;
     } catch {
       return false;
@@ -455,10 +479,10 @@ export class LocalStorageAdapter implements IDataRepository {
       localStorage.removeItem(STORAGE_KEY_WEIGHTS);
       localStorage.removeItem(STORAGE_KEY_MEMORIES);
       localStorage.removeItem(STORAGE_KEY_WATER);
+      localStorage.removeItem(STORAGE_KEY_WORKOUT_PLANS);
       return true;
     } catch {
       return false;
     }
   }
 }
-
