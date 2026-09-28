@@ -2,17 +2,28 @@ import express from 'express';
 import path from 'path';
 import { createServer as createViteServer } from 'vite';
 import dotenv from 'dotenv';
+import { createClient, SupabaseClient } from '@supabase/supabase-js';
 import {
   analyzeFoodTextWithGemini,
   refineFoodReportWithGemini,
   analyzeFoodAudioWithGemini,
   analyzeFoodImageWithGemini,
 } from './server/geminiAi';
+import { executeNeonOperation } from './server/neonData';
 
 dotenv.config();
 
 const app = express();
 const PORT = 3000;
+let authVerifier: SupabaseClient | null = null;
+
+function getAuthVerifier() {
+  const url = process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL;
+  const key = process.env.SUPABASE_ANON_KEY || process.env.VITE_SUPABASE_ANON_KEY;
+  if (!url || !key) return null;
+  if (!authVerifier) authVerifier = createClient(url, key, { auth: { persistSession: false, autoRefreshToken: false } });
+  return authVerifier;
+}
 
 // Allow larger payload for audio & image base64
 app.use(express.json({ limit: '20mb' }));
@@ -24,6 +35,29 @@ app.get('/api/health', (req, res) => {
     environment: process.env.NODE_ENV || 'development',
     time: new Date().toISOString(),
   });
+});
+
+// Cloud data is always accessed on the server: the database URL stays private and
+// the owner is taken from a verified Supabase Auth token, never from request JSON.
+app.post('/api/data', async (req, res) => {
+  const authorization = req.header('authorization') || '';
+  const token = authorization.startsWith('Bearer ') ? authorization.slice(7) : '';
+  const verifier = getAuthVerifier();
+  if (!token || !verifier) {
+    return res.status(401).json({ error: 'נדרשת התחברות לחשבון כדי לגשת לנתונים בענן.' });
+  }
+
+  try {
+    const { data, error } = await verifier.auth.getUser(token);
+    if (error || !data.user) return res.status(401).json({ error: 'פג תוקף ההתחברות. יש להתחבר מחדש.' });
+    const result = await executeNeonOperation(String(req.body?.action || ''), req.body?.args || {}, data.user.id);
+    return res.json({ data: result });
+  } catch (error: any) {
+    const message = String(error?.message || '');
+    const status = message.includes('DATABASE_URL') ? 503 : 500;
+    if (status === 500) console.error('[Neon API] Data operation failed:', error);
+    return res.status(status).json({ error: status === 503 ? 'שמירה בענן אינה מוגדרת בשרת (DATABASE_URL).' : 'שגיאה בעבודה מול מסד הנתונים.' });
+  }
 });
 
 // Analyze Text endpoint (PR-04)

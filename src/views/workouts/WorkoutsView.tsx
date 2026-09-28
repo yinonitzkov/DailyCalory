@@ -69,7 +69,7 @@ export const WorkoutsView: React.FC = () => {
     setPlans((previous) => [updated, ...previous.filter((item) => item.id !== updated.id)]);
     saveChainRef.current = saveChainRef.current.then(async () => {
       try { await repository.saveWorkoutPlan(updated); setError(''); }
-      catch (e: any) { setError(`השמירה נכשלה: ${e?.message || 'בדוק את חיבור Supabase והפעל את ה־migration'}`); }
+      catch (e: any) { setError(`השמירה נכשלה: ${e?.message || 'בדוק את הגדרות Neon והרצת הסכמה'}`); }
     });
     await saveChainRef.current;
   };

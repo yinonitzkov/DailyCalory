@@ -5,8 +5,8 @@
 מערכת אחודה, מודרנית וקלת משקל (Single Application):
 - **Client (Frontend):** React + TypeScript (Vite/Next.js Architecture), תמיכה מלאה ב-RTL, Web App Manifest, Service Worker ו-Tailwind CSS.
 - **Server Runtime:** Node.js API Routes בצד השרת עבור פעולות מאובטחות, פירוק AI (Gemini / OpenAI API), טיפול ב-Multipart (תמונות ואודיו), ו-Web Push VAPID.
-- **אימות (Auth):** אימות מאובטח מבוסס Google OAuth (Google Identity Services / Supabase / Firebase Auth) עם שמירת Session מקומית.
-- **מסד נתונים ואבטחה:** מודל נתונים רלציוני / מסמכים עם הרשאות מוחלטות ברמת שורת משתמש (`user_id`).
+- **אימות (Auth):** Supabase Auth מנהל כרגע כניסה ו־sessions; ה־API מאמת את ה־access token בכל בקשת נתונים.
+- **מסד נתונים ואבטחה:** Neon PostgreSQL דרך `pg` בשרת Express. `DATABASE_URL` נשאר סודי בצד השרת; כל פעולת DB מוגבלת ל־`user_id` מתוך token מאומת.
 - **בינה מלאכותית (AI Engine):** עיבוד בשרת בלבד עם Structured Outputs (JSON Schema מוגדר וקשיח).
 - **תמונות ומדיה:** Zero Persistence — קובץ התמונה או האודיו מעובד בזיכרון/Buffer של הבקשה ונמחק מיד בסיום.
 - **Web Push:** מנגנון VAPID מובנה עם משימת תזמון עצמאית (Dispatcher).

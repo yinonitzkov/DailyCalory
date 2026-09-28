@@ -26,7 +26,7 @@ export interface ReportFilterOptions {
 
 /**
  * Common Data Repository Interface (Contract)
- * Decouples UI / Context layer from the underlying storage mechanism (LocalStorage, Supabase, etc.)
+ * Decouples UI / Context layer from the underlying storage mechanism (LocalStorage or Neon API).
  */
 export interface IDataRepository {
   // --- Profile & Targets ---

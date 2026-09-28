@@ -13,7 +13,15 @@ import {
 } from './IDataRepository';
 import { getSupabaseClient } from '../supabase/client';
 
-export class SupabaseAdapter implements IDataRepository {
+export class LegacySupabaseMigrationSource implements IDataRepository {
+  async testSourceConnection(): Promise<void> {
+    const client = this.getClient();
+    const { data: { user }, error: authError } = await client.auth.getUser();
+    if (authError || !user) throw new Error('יש להתחבר לחשבון Supabase הישן לפני העברת הנתונים.');
+    const { error } = await client.from('user_profiles').select('user_id').eq('user_id', user.id).limit(1);
+    if (error) throw new Error(`לא ניתן לקרוא את מסד Supabase הישן: ${error.message}`);
+  }
+
   private getClient() {
     const client = getSupabaseClient();
     if (!client) {
@@ -571,14 +579,20 @@ export class SupabaseAdapter implements IDataRepository {
   // --- Backup, Export, Import & Reset ---
   async exportAllData(userId?: string): Promise<AppBackupData> {
     const resolvedId = await this.resolveUserId(userId);
-    const [userProfile, foodReports, weightEntries, foodMemories, waterEntries, workoutPlans] = await Promise.all([
+    const [userProfile, foodReports, weightEntries, foodMemories, waterEntries] = await Promise.all([
       this.getProfile(resolvedId),
       this.getReports(resolvedId),
       this.getWeightEntries(resolvedId),
       this.getFoodMemories(resolvedId),
       this.getWaterEntries(resolvedId),
-      this.getWorkoutPlans(resolvedId),
     ]);
+    let workoutPlans: WorkoutPlan[] = [];
+    try {
+      workoutPlans = await this.getWorkoutPlans(resolvedId);
+    } catch (error: any) {
+      // Existing installations may predate the workout migration.
+      if (error?.code !== 'PGRST205' && error?.code !== '42P01') throw error;
+    }
 
     return {
       exportedAt: new Date().toISOString(),

@@ -1,5 +1,6 @@
+-- Run this once against the Neon database. API ownership checks are enforced server-side.
 -- ==============================================================================
--- Supabase Schema for Hebrew Calorie & Nutrition Tracker
+-- PostgreSQL schema for DailyCalory on Neon
 -- ==============================================================================
 
 -- 1. Create updated_at trigger function
@@ -43,7 +44,7 @@ CREATE TABLE IF NOT EXISTS food_reports (
   id TEXT PRIMARY KEY,
   user_id TEXT NOT NULL,
   client_request_id TEXT,
-  input_type TEXT NOT NULL CHECK (input_type IN ('text', 'image', 'voice', 'manual')),
+  input_type TEXT NOT NULL CHECK (input_type IN ('text', 'image', 'photo', 'voice', 'manual')),
   original_text TEXT,
   image_url TEXT,
   status TEXT NOT NULL DEFAULT 'saved' CHECK (status IN ('draft', 'analyzing', 'saved', 'deleted')),
@@ -132,41 +133,6 @@ BEFORE UPDATE ON water_entries
 FOR EACH ROW
 EXECUTE FUNCTION set_updated_at();
 
--- 8. Row Level Security (RLS) configuration
-ALTER TABLE user_profiles ENABLE ROW LEVEL SECURITY;
-ALTER TABLE food_reports ENABLE ROW LEVEL SECURITY;
-ALTER TABLE food_components ENABLE ROW LEVEL SECURITY;
-ALTER TABLE weight_entries ENABLE ROW LEVEL SECURITY;
-ALTER TABLE user_food_memories ENABLE ROW LEVEL SECURITY;
-ALTER TABLE water_entries ENABLE ROW LEVEL SECURITY;
-
--- Anonymous/Authenticated policy templates (allow matching auth.uid() or anon with user_id header)
-CREATE POLICY "Allow individual read on user_profiles" ON user_profiles
-  FOR SELECT USING (auth.uid()::text = user_id OR user_id = 'local-user-1');
-
-CREATE POLICY "Allow individual insert/update on user_profiles" ON user_profiles
-  FOR ALL USING (auth.uid()::text = user_id OR user_id = 'local-user-1');
-
-CREATE POLICY "Allow individual access on food_reports" ON food_reports
-  FOR ALL USING (auth.uid()::text = user_id OR user_id = 'local-user-1');
-
-CREATE POLICY "Allow individual access on food_components" ON food_components
-  FOR ALL USING (
-    EXISTS (
-      SELECT 1 FROM food_reports
-      WHERE food_reports.id = food_components.report_id
-      AND (food_reports.user_id = auth.uid()::text OR food_reports.user_id = 'local-user-1')
-    )
-  );
-
-CREATE POLICY "Allow individual access on weight_entries" ON weight_entries
-  FOR ALL USING (auth.uid()::text = user_id OR user_id = 'local-user-1');
-
-CREATE POLICY "Allow individual access on user_food_memories" ON user_food_memories
-  FOR ALL USING (auth.uid()::text = user_id OR user_id = 'local-user-1');
-
-CREATE POLICY "Allow individual access on water_entries" ON water_entries
-  FOR ALL USING (auth.uid()::text = user_id OR user_id = 'local-user-1');
 
 -- 9. Workout plans. Exercise definitions remain versioned application seed data;
 -- plan items retain only stable exercise IDs and per-plan prescription values.
@@ -207,19 +173,3 @@ CREATE TABLE IF NOT EXISTS workout_plan_items (
   sort_order INTEGER NOT NULL DEFAULT 0
 );
 CREATE INDEX IF NOT EXISTS idx_workout_plan_items_day_order ON workout_plan_items(day_id, sort_order);
-
-ALTER TABLE workout_plans ENABLE ROW LEVEL SECURITY;
-ALTER TABLE workout_plan_days ENABLE ROW LEVEL SECURITY;
-ALTER TABLE workout_plan_items ENABLE ROW LEVEL SECURITY;
-DROP POLICY IF EXISTS "Users manage their workout plans" ON workout_plans;
-CREATE POLICY "Users manage their workout plans" ON workout_plans
-  FOR ALL USING (auth.uid()::text = user_id OR user_id = 'local-user-1')
-  WITH CHECK (auth.uid()::text = user_id OR user_id = 'local-user-1');
-DROP POLICY IF EXISTS "Users manage their workout plan days" ON workout_plan_days;
-CREATE POLICY "Users manage their workout plan days" ON workout_plan_days
-  FOR ALL USING (EXISTS (SELECT 1 FROM workout_plans p WHERE p.id = plan_id AND (p.user_id = auth.uid()::text OR p.user_id = 'local-user-1')))
-  WITH CHECK (EXISTS (SELECT 1 FROM workout_plans p WHERE p.id = plan_id AND (p.user_id = auth.uid()::text OR p.user_id = 'local-user-1')));
-DROP POLICY IF EXISTS "Users manage their workout plan items" ON workout_plan_items;
-CREATE POLICY "Users manage their workout plan items" ON workout_plan_items
-  FOR ALL USING (EXISTS (SELECT 1 FROM workout_plan_days d JOIN workout_plans p ON p.id = d.plan_id WHERE d.id = day_id AND (p.user_id = auth.uid()::text OR p.user_id = 'local-user-1')))
-  WITH CHECK (EXISTS (SELECT 1 FROM workout_plan_days d JOIN workout_plans p ON p.id = d.plan_id WHERE d.id = day_id AND (p.user_id = auth.uid()::text OR p.user_id = 'local-user-1')));

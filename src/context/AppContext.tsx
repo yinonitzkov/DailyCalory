@@ -21,12 +21,13 @@ import {
   getActiveStorageType,
   switchStorageType,
   migrateLocalToCloud,
+  migrateExistingSupabaseDataToNeon,
 } from '../services/repository';
 import {
   isSupabaseConfigured,
-  testSupabaseConnection,
   getSupabaseClient,
 } from '../services/supabase/client';
+import { NeonAdapter } from '../services/repository/NeonAdapter';
 import {
   signInWithEmail,
   signUpWithEmail,
@@ -53,16 +54,17 @@ interface AppContextType {
   weeklyHistory: { date: string; dayLabel: string; calories: number; target: number }[];
   latestWeight: { current: number; previous?: number; diff?: number; date?: string };
   // Storage & Cloud features
-  storageType: 'local' | 'supabase';
-  isSupabaseAvailable: boolean;
+  storageType: 'local' | 'neon';
+  isCloudAuthConfigured: boolean;
   isCloudLoading: boolean;
   cloudSyncError: string | null;
-  switchStorageProvider: (type: 'local' | 'supabase') => Promise<void>;
-  migrateToSupabase: (onProgress?: (step: string) => void) => Promise<{
+  switchStorageProvider: (type: 'local' | 'neon') => Promise<void>;
+  migrateToCloud: (onProgress?: (step: string) => void) => Promise<{
     success: boolean;
     message: string;
-    count?: { reports: number; weights: number; memories: number; water: number };
+    count?: { reports: number; weights: number; memories: number; water: number; plans: number };
   }>;
+  migrateExistingCloudData: (onProgress?: (step: string) => void) => Promise<{ success: boolean; message: string }>;
   testCloudConnection: () => Promise<{ ok: boolean; message: string }>;
   // Step 5: Auth State & Actions
   currentUser: User | null;
@@ -100,8 +102,8 @@ interface AppContextType {
 const AppContext = createContext<AppContextType | undefined>(undefined);
 
 export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [storageType, setStorageType] = useState<'local' | 'supabase'>(() => getActiveStorageType());
-  const isSupabaseAvailable = useMemo(() => isSupabaseConfigured(), []);
+  const [storageType, setStorageType] = useState<'local' | 'neon'>(() => getActiveStorageType());
+  const isCloudAuthConfigured = useMemo(() => isSupabaseConfigured(), []);
   const [isCloudLoading, setIsCloudLoading] = useState<boolean>(false);
   const [cloudSyncError, setCloudSyncError] = useState<string | null>(null);
 
@@ -188,36 +190,40 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   }, [repository]);
 
   useEffect(() => {
-    if (storageType === 'supabase') {
+    if (storageType === 'neon') {
       refreshRepositoryData(repository, currentUser?.id);
     }
   }, [storageType, currentUser?.id, repository, refreshRepositoryData]);
 
   // Switch storage provider dynamically
-  const switchStorageProvider = useCallback(async (newType: 'local' | 'supabase') => {
+  const switchStorageProvider = useCallback(async (newType: 'local' | 'neon') => {
     const repo = switchStorageType(newType);
     setStorageType(newType);
     await refreshRepositoryData(repo, currentUser?.id);
   }, [refreshRepositoryData, currentUser?.id]);
 
-  const migrateToSupabase = useCallback(async (onProgress?: (step: string) => void) => {
+  const migrateToCloud = useCallback(async (onProgress?: (step: string) => void) => {
     const result = await migrateLocalToCloud(currentUser?.id, onProgress);
     if (result.success) {
-      await switchStorageProvider('supabase');
+      await switchStorageProvider('neon');
     }
     return result;
   }, [switchStorageProvider, currentUser?.id]);
 
-  const testCloud = useCallback(async () => {
-    return testSupabaseConnection();
-  }, []);
+  const migrateExistingCloudData = useCallback(async (onProgress?: (step: string) => void) => {
+    const result = await migrateExistingSupabaseDataToNeon(onProgress);
+    if (result.success) await switchStorageProvider('neon');
+    return result;
+  }, [switchStorageProvider]);
+
+  const testCloud = useCallback(async () => NeonAdapter.testConnection(), []);
 
   // Auth Methods
   const loginWithEmailAction = useCallback(async (email: string, pass: string) => {
     const res = await signInWithEmail(email, pass);
     if (res.success) {
-      setStorageType('supabase');
-      switchStorageType('supabase');
+      setStorageType('neon');
+      switchStorageType('neon');
     }
     return res;
   }, []);
@@ -225,8 +231,8 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const registerWithEmailAction = useCallback(async (email: string, pass: string) => {
     const res = await signUpWithEmail(email, pass);
     if (res.success) {
-      setStorageType('supabase');
-      switchStorageType('supabase');
+      setStorageType('neon');
+      switchStorageType('neon');
     }
     return res;
   }, []);
@@ -483,11 +489,12 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         weeklyHistory,
         latestWeight,
         storageType,
-        isSupabaseAvailable,
+        isCloudAuthConfigured,
         isCloudLoading,
         cloudSyncError,
         switchStorageProvider,
-        migrateToSupabase,
+        migrateToCloud,
+        migrateExistingCloudData,
         testCloudConnection: testCloud,
         currentUser,
         authSession,

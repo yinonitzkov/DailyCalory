@@ -42,39 +42,3 @@ export function getSupabaseClient(): SupabaseClient | null {
   return supabaseInstance;
 }
 
-export async function testSupabaseConnection(): Promise<{
-  ok: boolean;
-  message: string;
-  details?: any;
-}> {
-  const client = getSupabaseClient();
-  if (!client) {
-    return {
-      ok: false,
-      message: 'פרטי החיבור של Supabase (URL / ANON KEY) אינם מוגדרים במשתני הסביבה.',
-    };
-  }
-
-  try {
-    // Quick test query against user_profiles or food_reports table
-    const { error } = await client.from('user_profiles').select('user_id').limit(1);
-    if (error) {
-      return {
-        ok: false,
-        message: `שגיאה בתקשורת עם מסד הנתונים: ${error.message}`,
-        details: error,
-      };
-    }
-    return {
-      ok: true,
-      message: 'החיבור ל-Supabase תקין ופעיל! כל הטבלאות נגישות.',
-    };
-  } catch (err: any) {
-    return {
-      ok: false,
-      message: `שגיאת רשת בעת חיבור לענן: ${err.message || String(err)}`,
-      details: err,
-    };
-  }
-}
-

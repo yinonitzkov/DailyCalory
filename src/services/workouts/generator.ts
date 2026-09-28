@@ -19,13 +19,22 @@ function dayExercises(focus: WorkoutFocus, preferences: WorkoutPlanPreferences, 
 }
 function makeItems(focus: WorkoutFocus, candidates: Exercise[], targetMinutes: number, dayIndex: number): WorkoutPlanItem[] {
   const cardio = focus === 'cardio';
-  const preferredCount = Math.max(3, Math.min(cardio ? 2 : 6, Math.round(targetMinutes / (cardio ? 12 : 5))));
-  const selected: Exercise[] = [];
-  for (let i = 0; i < Math.min(candidates.length, preferredCount); i++) selected.push(candidates[(i + dayIndex) % candidates.length]);
-  if (!selected.length) return [];
-  const sets = cardio
-    ? Math.max(4, Math.min(24, Math.round(targetMinutes / 1.5)))
-    : Math.max(3, Math.min(6, Math.round(Math.max(1, targetMinutes - 8) / (selected.length * 1.33))));
+  if (!candidates.length) return [];
+  const maxItems = Math.min(candidates.length, cardio ? 2 : 10);
+  const maxSets = cardio ? 90 : 8;
+  const restSeconds = cardio ? 15 : (focus === 'legs' ? 75 : 60);
+  const targetSeconds = targetMinutes * 60;
+  let best = { count: 1, sets: 1, distance: Number.POSITIVE_INFINITY };
+  for (let count = 1; count <= maxItems; count++) {
+    for (let sets = 1; sets <= maxSets; sets++) {
+      const workSeconds = cardio ? 30 : 40;
+      const total = count * (sets * workSeconds + Math.max(0, sets - 1) * restSeconds) + 240 + count * 45;
+      const distance = Math.abs(total - targetSeconds);
+      if (distance < best.distance) best = { count, sets, distance };
+    }
+  }
+  const selected = Array.from({ length: best.count }, (_, index) => candidates[(index + dayIndex) % candidates.length]);
+  const sets = best.sets;
   return selected.map((exercise, index) => ({
     id: uid(), exerciseId: exercise.id, sets, targetType: cardio ? 'time' : 'reps',
     targetValue: cardio ? '30 שניות' : (focus === 'core' ? '10–15' : '8–12'),
